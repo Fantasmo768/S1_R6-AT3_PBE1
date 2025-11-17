@@ -19,7 +19,7 @@ const clienteModel = {
         return rows;
     },
      buscarPorId: async (id_cliente) => {
-        const sql = 'SELECT * FROM cliente WHERE id_cliente = ?;';
+        const sql = 'SELECT * FROM clientes WHERE id_cliente = ?;';
         const values = [id_cliente];
 
         const [rows] = await pool.query(sql, values);
