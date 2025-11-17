@@ -17,7 +17,15 @@ const clienteModel = {
 
         const [rows] = await pool.query(sql, values);
         return rows;
+    },
+     buscarPorId: async (id_cliente) => {
+        const sql = 'SELECT * FROM cliente WHERE id_cliente = ?;';
+        const values = [id_cliente];
+
+        const [rows] = await pool.query(sql, values);
+        return rows[0]; 
     }
+
 };
 
 module.exports = { clienteModel };
