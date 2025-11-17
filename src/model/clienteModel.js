@@ -7,13 +7,13 @@ const clienteModel = {
         return rows;
     },
 
-    inserirCliente: async ( nome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado,cep) => {
+    inserirCliente: async ( nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado,cep) => {
         const sql = `
             INSERT INTO cliente 
-            (nome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            (nome_cliente, cpf_cliente, sobrenome_cliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         
-        const values = [ nome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado,cep ];
+        const values = [ nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado,cep ];
 
         const [rows] = await pool.query(sql, values);
         return rows;

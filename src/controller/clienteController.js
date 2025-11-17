@@ -17,11 +17,19 @@ const clienteController = {
 
     criarCliente: async (req, res) => {
         try {
-            const { nome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep } = req.body;
+            const { nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep } = req.body;
 
-            const novoCliente = { nome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro,cidade,estado, cep };
+            const nome_string = String(nome_cliente.trim());
+            const sobrenome_string = String(sobrenome_cliente.trim());
+            const cep_string = String(cep.trim());
+            const cpf_cliente_string = String(cpf_cliente.trim());
 
-            const resultado = await clienteModel.inserirCliente(novoCliente);
+
+            if (!nome_cliente || !sobrenome_cliente || !cpf_cliente || !telefone || !email || !logradouro || !numero || !bairro || !cidade || !estado || !cep || cep_string.length !== 8 || cpf_cliente_string.length !== 11 || telefone.length < 8 ) {
+                return res.status(405).json({message: "Você inseriu valores de maneira inadequada"});
+            }
+
+            const resultado = await clienteModel.inserirCliente(nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep);
 
             res.status(201).json({
                 message: 'Cliente cadastrado com sucesso',

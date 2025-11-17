@@ -28,8 +28,8 @@ const pedidoController = {
 
             return res.status(201).json({ message: "Pedido adicionado com sucesso", pedidoAdicionado });
         } catch (error) {
-            console.error(error)
-            return res.status(500).json({ message: "Erro interno do servidor" })
+            console.error(error);
+            return res.status(500).json({ message: "Erro interno do servidor" });
         }
     }
 }
