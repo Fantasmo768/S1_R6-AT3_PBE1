@@ -2,7 +2,7 @@ const pool = require('../config/db');
 
 const clienteModel = {
     selecionarTodos: async () => {
-        const sql = 'SELECT * FROM cliente;';
+        const sql = 'SELECT * FROM clientes;';
         const [rows] = await pool.query(sql);
         return rows;
     },
@@ -31,6 +31,11 @@ const clienteModel = {
 
         const [rows] = await pool.query(sql, values);
         return rows;
+    },
+    updateCliente: async (nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, estado, cep, cidade, id_cliente) => {
+        const sql = 'UPDATE clientes SET nome = ?, sobrenome = ?, cpf = ?, telefone = ?, email = ?, logradouro = ?, numero = ?, bairro = ?, estado = ?, cep = ?, cidade = ? WHERE id_cliente = ?;';
+        const values = [nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, estado, cep, cidade, id_cliente];
+
     }
 
 };

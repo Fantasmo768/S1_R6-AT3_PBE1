@@ -5,14 +5,39 @@ const clienteController = {
     buscarTodos: async (req, res) => {
         try {
             const clientes = await clienteModel.selecionarTodos();
-            res.status(200).json(clientes);
+            return res.status(200).json(clientes);
         } catch (error) {
-            res.status(500).json({
+            console.error(error);
+            return res.status(500).json({
                 message: 'Erro ao buscar clientes'
             });
         }
     },
 
+    buscarPorId: async (req, res) => {
+        try {
+            const { id_cliente } = req.params;
+
+            const id_cliente_int = Number(id_cliente);
+
+            if (!id_cliente || !Number.isInteger(id_cliente_int)) {
+                return res.status(400).json({ message: "Insira um ID válido" });
+            }
+
+            const resultado = await clienteModel.buscarPorId(id_cliente);
+
+            if (resultado.length === 0) {
+                return res.status(404).json({ message: "Cliente não encontrado" });
+            }
+
+            return res.status(200).json({message: "Cliente:", resultado})
+        } catch (error) {
+            console.error(error)
+            return res.status(500).json({
+                message: 'Erro ao buscar clientes'
+            });
+        }
+    },
 
     criarCliente: async (req, res) => {
         try {
@@ -48,7 +73,7 @@ const clienteController = {
                 error
             });
         }
-    }
+    },
 
 };
 
