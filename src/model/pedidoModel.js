@@ -20,15 +20,19 @@ const pedidoModel = {
 
     },
 
-    adicionarPedido: async (data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente) => {
+    adicionarPedido: async (data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente, valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega) => {
         const connection = await pool.getConnection();
         try {
             const sqlPedido = 'INSERT INTO pedidos (data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente_fk) VALUES (?, ?, ?, ?, ?, ?, ?);';
             const values = [data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente];
             const [rowsPedido] = await connection.query(sqlPedido, values);
 
+            const sqlEntrega = 'INSERT INTO entregas (valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega, id_pedido_fk) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
+            const valuesEntrega = [valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega, rowsPedido.insertId];
+            const [rowsEntrega] = await connection.query(sqlEntrega, valuesEntrega);
+            
             connection.commit();
-            return rowsPedido;
+            return {rowsPedido, rowsEntrega};
         } catch (error) {
             connection.rollback();
             throw error;

@@ -47,13 +47,13 @@ const entregaController = {
                 valor_final = valor_base;
             }
 
-            if (taxa === true) {
-                valor_final = valor_final + 15;
+            if (valor_final > 500) {
+                valor_final = valor_final * 0.9;
+                desconto = valor_final * 0.1
             }
 
-            if (valor_final > 500) {
-                valor_final = valor_final * 0.8;
-                desconto = valor_final * 0.2
+            if (taxa === true) {
+                valor_final = valor_final + 15;
             }
 
             const resultado = await entregaModel.insertEntrega(valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega, id_pedido);

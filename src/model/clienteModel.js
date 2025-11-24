@@ -11,7 +11,7 @@ const clienteModel = {
         const sql = `
             INSERT INTO clientes 
             (nome, sobrenome, cpf, telefone, email, logradouro, numero, bairro, estado, cep, cidade)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
         const values = [nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep];
 
