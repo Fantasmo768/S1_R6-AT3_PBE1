@@ -3,6 +3,23 @@ const pool = require('../config/db');
 const pedidoModel = {
 
 
+    buscarInfoPedido: async (id_pedido) => {
+        const connection = await pool.getConnection();
+
+        try {
+            const sqlSelect = 'SELECT distancia, peso, valor_km, valor_kg, entrega_urgente FROM pedidos WHERE id_pedido = ?;';
+            const valuesSelect = [id_pedido];
+            const [rowsSelect] = await connection.query(sqlSelect, valuesSelect);
+
+            connection.commit();
+
+            return rowsSelect;
+        } catch (error) {
+            connection.rollback();
+        }
+
+    },
+
     adicionarPedido: async (data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente) => {
         const connection = await pool.getConnection();
         try {
@@ -20,4 +37,4 @@ const pedidoModel = {
 
 }
 
-module.exports = {pedidoModel}
+module.exports = { pedidoModel }

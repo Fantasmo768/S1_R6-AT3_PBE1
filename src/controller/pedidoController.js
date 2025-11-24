@@ -14,13 +14,13 @@ const pedidoController = {
             const valor_kg_num = Number(valor_kg);
             const entrega_urgente_bool = Boolean(entrega_urgente);
 
-            const clienteSelecionado = await clienteModel.buscarPorId(id_cliente);
-
             if (!data_pedido || !entrega_urgente || !distancia || !peso || !valor_km || !id_cliente || !valor_kg || !Number.isInteger(id_cliente_num) || typeof entrega_urgente_bool !== "boolean" || typeof distancia_num !== "number" || typeof peso_num !== "number" || typeof valor_km_num !== "number" || typeof valor_kg_num !== "number" || distancia_num <= 0 || peso_num <= 0) {
                 return res.status(405).json({ message: "Você inseriu os valores de maneira inadequada." });
             }
 
-            if (clienteSelecionado === undefined) {
+            const clienteSelecionado = await clienteModel.buscarPorId(id_cliente);
+
+            if (clienteSelecionado.length === 0) {
                 return res.status(404).json({ message: "O cliente não existe" })
             }
 
@@ -31,7 +31,8 @@ const pedidoController = {
             console.error(error);
             return res.status(500).json({ message: "Erro interno do servidor" });
         }
-    }
+
+    },
 }
 
 module.exports = { pedidoController }

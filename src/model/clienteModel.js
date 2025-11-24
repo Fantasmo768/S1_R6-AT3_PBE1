@@ -7,23 +7,30 @@ const clienteModel = {
         return rows;
     },
 
-    inserirCliente: async ( nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado,cep) => {
+    inserirCliente: async (nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, estado, cep, cidade) => {
         const sql = `
-            INSERT INTO cliente 
-            (nome_cliente, cpf_cliente, sobrenome_cliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep)
+            INSERT INTO clientes 
+            (nome, sobrenome, cpf, telefone, email, logradouro, numero, bairro, estado, cep, cidade)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        
-        const values = [ nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado,cep ];
+
+        const values = [nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep];
 
         const [rows] = await pool.query(sql, values);
         return rows;
     },
-     buscarPorId: async (id_cliente) => {
+    buscarPorId: async (id_cliente) => {
         const sql = 'SELECT * FROM clientes WHERE id_cliente = ?;';
         const values = [id_cliente];
 
         const [rows] = await pool.query(sql, values);
-        return rows[0]; 
+        return rows;
+    },
+    buscarPorCpf: async (cpf_cliente) => {
+        const sql = 'SELECT * FROM clientes WHERE cpf = ?;'
+        const values = [cpf_cliente];
+
+        const [rows] = await pool.query(sql, values);
+        return rows;
     }
 
 };
