@@ -36,6 +36,13 @@ const clienteModel = {
         const sql = 'UPDATE clientes SET nome = ?, sobrenome = ?, cpf = ?, telefone = ?, email = ?, logradouro = ?, numero = ?, bairro = ?, estado = ?, cep = ?, cidade = ? WHERE id_cliente = ?;';
         const values = [nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, estado, cep, cidade, id_cliente];
 
+        const [rows] = await pool.query(sql, values);
+        return rows;
+    },
+    deleteCliente: async (id_cliente) => {
+        const sql = 'DELETE FROM clientes WHERE id_cliente = ?;'
+        const [rows] = await pool.query(sql, id_cliente);
+        return rows;
     }
 
 };
