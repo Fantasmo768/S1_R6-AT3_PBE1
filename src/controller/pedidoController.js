@@ -1,5 +1,6 @@
 const { pedidoModel } = require("../model/pedidoModel");
 const { clienteModel } = require("../model/clienteModel");
+const { entregaModel } = require("../model/entregaModel");
 
 const pedidoController = {
 
@@ -77,8 +78,6 @@ const pedidoController = {
                 return res.status(400).json({ message: "Insira algum status de entrega que esteja de acordo com a lista: calculado, entrege, em transito ou cancelado" });
             }
 
-            let valor_final;
-
             let desconto = 0;
 
             let acrescimo = 0;
@@ -90,6 +89,8 @@ const pedidoController = {
             let valor_peso = peso * valor_kg;
 
             let valor_base = valor_distancia + valor_peso;
+
+            let valor_final = valor_base;
 
             if (peso > 50) {
                 taxa = true;
@@ -144,6 +145,7 @@ const pedidoController = {
             const novo_status_entrega = status_entrega ?? pedido_atual[0].status_entrega;
             const nova_entrega_urgente = entrega_urgente ?? pedido_atual[0].entrega_urgente;
 
+            console.log(data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente, status_entrega)
 
             const id_cliente_num = Number(novo_id_cliente);
             const distancia_num = Number(nova_distancia);
@@ -153,8 +155,8 @@ const pedidoController = {
             const status_entrega_string = String(status_entrega);
             const entrega_urgente_bool = Boolean(nova_entrega_urgente);
 
-            if (!nova_data || !nova_entrega_urgente || !nova_distancia || !novo_peso || !novo_valor_km || !novo_valor_kg || !novo_id_cliente || !novo_status_entrega || typeof status_entrega_string !== "string" || Number.isInteger(id_cliente_num) || typeof entrega_urgente_bool !== "boolean" || typeof distancia_num !== "number" || typeof peso_num !== "number" || typeof valor_km_num !== "number" || typeof valor_kg_num !== "number" || distancia_num <= 0 || peso_num <= 0) {
-                return res.status(405).json({ message: "Você inseriu os valores de maneira inadequada." });
+            if (!nova_data || !nova_entrega_urgente || !nova_distancia || !novo_peso || !novo_valor_km || !novo_valor_kg || !novo_id_cliente || !novo_status_entrega || typeof status_entrega_string !== "string" || !Number.isInteger(id_cliente_num) || typeof entrega_urgente_bool !== "boolean" || typeof distancia_num !== "number" || typeof peso_num !== "number" || typeof valor_km_num !== "number" || typeof valor_kg_num !== "number" || distancia_num <= 0 || peso_num <= 0) {
+                return res.status(400).json({ message: "Você inseriu os valores de maneira inadequada." });
             }
 
             const clienteSelecionado = await clienteModel.buscarPorId(id_cliente);
@@ -224,10 +226,16 @@ const pedidoController = {
             const pedidoSelecionado = await pedidoModel.buscarPedidoPorId(id);
 
             if (pedidoSelecionado.length === 0) {
-                return res.status(404).json("Pedido não encontrado");
+                return res.status(404).json({Message:"Pedido não encontrado"});
             }
 
-            const resultado = await pedidoModel(pedidoSelecionado);
+            const entregaRelacionada = await entregaModel.buscarEntregaPorPedido(id);
+
+            if (entregaRelacionada.length !== 0) {
+                return res.status(400).json({message: "Existe uma entrega relacionada a este pedido. Delete a entrega primeiro."});
+            }
+
+            const resultado = await pedidoModel.deletePedido(id);
 
             return res.status(200).json({ message: "Pedido deletado com sucesso!", resultado });
 

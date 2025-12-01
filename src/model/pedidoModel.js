@@ -6,6 +6,9 @@ const pedidoModel = {
         const connection = await pool.getConnection();
 
         try {
+
+            await connection.beginTransaction();
+
             const sqlSelect = 'SELECT * FROM pedidos;';
             const [rowsSelect] = await connection.query(sqlSelect);
 
@@ -21,6 +24,8 @@ const pedidoModel = {
         const connection = await pool.getConnection();
 
         try {
+            await connection.beginTransaction();
+
             const sqlSelect = 'SELECT * FROM pedidos WHERE id_pedido = ?;';
             const valuesSelect = [id_pedido];
             const [rowsSelect] = await connection.query(sqlSelect, valuesSelect);
@@ -53,6 +58,8 @@ const pedidoModel = {
     adicionarPedido: async (data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente, valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega) => {
         const connection = await pool.getConnection();
         try {
+            await connection.beginTransaction();
+
             const sqlPedido = 'INSERT INTO pedidos (data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente_fk) VALUES (?, ?, ?, ?, ?, ?, ?);';
             const values = [data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente];
             const [rowsPedido] = await connection.query(sqlPedido, values);
@@ -72,11 +79,13 @@ const pedidoModel = {
     atualizarPedido: async (data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente, id_pedido, valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega) => {
         const connection = await pool.getConnection();
         try {
+            await connection.beginTransaction();
+
             const sqlPedido = 'UPDATE pedidos SET data_pedido = ?, entrega_urgente = ?, distancia = ?, peso = ?, valor_km = ?, valor_kg = ?, id_cliente_fk = ? WHERE id_pedido = ?;';
             const values = [data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente, id_pedido];
             const [rowsPedido] = await connection.query(sqlPedido, values);
 
-            const sqlEntrega = 'UPDATE entregas SET valor_distancia = ?, valor_peso = ?, acrescimo = ?, desconto = ?, taxa = ?, valor_final = ?, status_entrega = ? HHERE id_pedido_fk = ?;';
+            const sqlEntrega = 'UPDATE entregas SET valor_distancia = ?, valor_peso = ?, acrescimo = ?, desconto = ?, taxa = ?, valor_final = ?, status_entrega = ? WHERE id_pedido_fk = ?;';
             const valuesEntrega = [valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega, id_pedido];
             const [rowsEntrega] = await connection.query(sqlEntrega, valuesEntrega);
 
@@ -91,11 +100,25 @@ const pedidoModel = {
     deletePedido: async (id_pedido) => {
         const connection = await pool.getConnection();
         try {
-
+            await connection.beginTransaction();
             const sql = 'DELETE FROM pedidos WHERE id_pedido = ?;'
             const [rows] = await pool.query(sql, id_pedido);
 
             connection.commit();
+            return rows;
+        } catch (error) {
+            connection.rollback();
+            throw error;
+        }
+    },
+    buscarPedidosPorCliente: async (id_cliente) => {
+        const connection = await pool.getConnection();
+        try {
+            await connection.beginTransaction();
+            const sql = "SELECT * FROM pedidos WHERE id_cliente_fk = ?";
+            const [rows] = await pool.query(sql, [id_cliente]);
+
+             connection.commit();
             return rows;
         } catch (error) {
             connection.rollback();

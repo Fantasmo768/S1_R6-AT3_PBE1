@@ -1,5 +1,5 @@
 const { clienteModel } = require('../model/clienteModel');
-
+const {pedidoModel} = require('../model/pedidoModel');
 const clienteController = {
 
 
@@ -93,16 +93,16 @@ const clienteController = {
             if (!Number.isInteger(id_num) || !id) {
                 return res.status(405).json({ message: "O id não é válido" });
             }
-
+            console.log(cpf_cliente)
             const clienteAtual = await clienteModel.buscarPorId(id);
-
+            console.log(clienteAtual[0])
             if (clienteAtual.length === 0) {
                 return res.status(404).json({ message: "Cliente não encontrado" });
             }
 
-            const novo_nome = nome_cliente ?? clienteAtual[0].nome_cliente;
-            const novo_sobrenome = sobrenome_cliente ?? clienteAtual[0].sobrenome_cliente;
-            const novo_cpf = cpf_cliente ?? clienteAtual[0].cpf_cliente;
+            const novo_nome = nome_cliente ?? clienteAtual[0].nome;
+            const novo_sobrenome = sobrenome_cliente ?? clienteAtual[0].sobrenome;
+            const novo_cpf = cpf_cliente ?? clienteAtual[0].cpf;
             const novo_telefone = telefone ?? clienteAtual[0].telefone;
             const novo_email = email ?? clienteAtual[0].email;
             const novo_logradouro = logradouro ?? clienteAtual[0].logradouro;
@@ -129,7 +129,7 @@ const clienteController = {
                 return res.status(409).json({ message: "Cpf já existente" });
             }
 
-            const resultado = await clienteModel.atualizarCliente(nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, estado, cep, cidade, id);
+            const resultado = await clienteModel.updateCliente(novo_nome, novo_sobrenome, novo_cpf, novo_telefone, novo_email, novo_logradouro, novo_numero, novo_bairro, novo_estado, novo_cep, nova_cidade, id);
 
             return res.status(200).json({ message: "Cliente atualizado com sucesso", resultado });
         } catch (error) {
@@ -152,10 +152,16 @@ const clienteController = {
         const clienteSelecionado = await clienteModel.buscarPorId(id);
 
         if (clienteSelecionado.length === 0) {
-            return res.status(404).json("Cliente não encontrado");
+            return res.status(404).json({message:"Cliente não encontrado"});
         }
 
-        const resultado = await clienteModel.deleteCliente(id_cliente);
+        const pedidoRelacionado = await pedidoModel.buscarPedidosPorCliente(id)
+
+        if(pedidoRelacionado.length !== 0) {
+            return res.status(400).json({message: "Ainda existem pedidos relacionados ao cliente. Delete o pedido primeiro."})
+        }
+
+        const resultado = await clienteModel.deleteCliente(id);
 
         return res.status(200).json({message: "Cliente deletado com sucesso!", resultado});
 

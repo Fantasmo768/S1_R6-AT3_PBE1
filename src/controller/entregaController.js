@@ -20,23 +20,23 @@ const entregaController = {
         }
     },
 
-    buscarPorId: async (req, res) => {
+    selectEntregaPorId: async (req, res) => {
         try {
             const { id_entrega } = req.params;
 
             const id_entrega_num = Number(id_entrega);
 
-            if (!id_entrega || !Number.isInteger(id_entrega_num)) {
+            if (!id_entrega_num || !Number.isInteger(id_entrega_num)) {
                 return res.status(400).json({ message: "Insira um ID válido" });
             }
 
-            const resultado = await entregaModel.buscarEntregaPorId(id_entrega);
+            const resultado = await entregaModel.buscarEntregaPorId(id_entrega_num);
 
             if (resultado.length === 0) {
-                return res.status(404).json({ message: "Entrega não encontrado" });
+                return res.status(404).json({ message: "Pedido não encontrado" });
             }
 
-            return res.status(200).json({ message: "entrega:", resultado })
+            return res.status(200).json({ message: "Pedido:", resultado })
         } catch (error) {
             console.error(error)
             return res.status(500).json({
@@ -65,6 +65,12 @@ const entregaController = {
 
             const { distancia, peso, valor_km, valor_kg, entrega_urgente } = pedidoSelecionado[0];
 
+            const distancia_num = Number(distancia);
+            const peso_num = Number(peso);
+            const valor_km_num = Number(valor_km);
+            const valor_kg_num = Number(valor_kg);
+            const entrega_urgente_bool = Boolean(entrega_urgente)
+
             //#region Cálculo da entrega
 
             let desconto = 0;
@@ -73,19 +79,19 @@ const entregaController = {
 
             let taxa = false;
 
-            let valor_distancia = distancia * valor_km;
+            let valor_distancia = distancia_num * valor_km_num;
 
-            let valor_peso = peso * valor_kg;
+            let valor_peso = peso_num * valor_kg_num;
 
             let valor_base = valor_distancia + valor_peso;
 
             let valor_final = valor_base;
 
-            if (peso > 50) {
+            if (peso_num > 50) {
                 taxa = true;
             }
 
-            if (entrega_urgente === true) {
+            if (entrega_urgente_bool === true) {
                 acrescimo = valor_base * 0.20;
                 valor_final = valor_base + acrescimo;
             } else {
@@ -93,8 +99,8 @@ const entregaController = {
             }
 
             if (valor_final > 500) {
-                valor_final = valor_final * 0.9;
-                desconto = valor_final * 0.1
+                desconto = valor_final * 0.1;
+                valor_final = valor_final - desconto;
             }
 
             if (taxa === true) {
@@ -116,7 +122,7 @@ const entregaController = {
 
     atualizarEntrega: async (req, res) => {
         try {
-            const { id_entrega } = req.params;
+            const { id_entrega} = req.params;
             const { status_entrega, id_pedido } = req.body;
 
             const id_entrega_num = Number(id_entrega);
@@ -125,7 +131,7 @@ const entregaController = {
                 return res.status(400).json({ message: "Insira um id válido." })
             }
 
-            const entrega_atual = await pedidoModel.buscarPedidoPorId(id_entrega);
+             const entrega_atual = await entregaModel.buscarEntregaPorId(id_entrega);
 
             const novo_status_entrega = status_entrega ?? entrega_atual[0].status_entrega;
             const novo_id_pedido = id_pedido ?? entrega_atual[0].id_pedido_fk;
@@ -135,6 +141,12 @@ const entregaController = {
             const pedidoSelecionado = await pedidoModel.buscarInfoPedido(novo_id_pedido);
 
             const { distancia, peso, valor_km, valor_kg, entrega_urgente } = pedidoSelecionado[0];
+
+            const distancia_num = Number(distancia);
+            const peso_num = Number(peso);
+            const valor_km_num = Number(valor_km);
+            const valor_kg_num = Number(valor_kg);
+            const entrega_urgente_bool = Boolean(entrega_urgente);
 
             if (!novo_status_entrega || !novo_id_pedido || !Number.isInteger(novo_id_pedido_num)) {
                 return res.status(405).json({ message: "Você inseriu os valores de maneira inadequada." });
@@ -150,19 +162,19 @@ const entregaController = {
 
             let taxa = false;
 
-            let valor_distancia = distancia * valor_km;
+            let valor_distancia = distancia_num * valor_km_num;
 
-            let valor_peso = peso * valor_kg;
+            let valor_peso = peso_num * valor_kg_num;
 
             let valor_base = valor_distancia + valor_peso;
 
             let valor_final = valor_base;
 
-            if (peso > 50) {
+            if (peso_num > 50) {
                 taxa = true;
             }
 
-            if (entrega_urgente === true) {
+            if (entrega_urgente_bool === true) {
                 acrescimo = valor_base * 0.20;
                 valor_final = valor_base + acrescimo;
             } else {
@@ -170,17 +182,18 @@ const entregaController = {
             }
 
             if (valor_final > 500) {
-                valor_final = valor_final * 0.9;
-                desconto = valor_final * 0.1
+                desconto = valor_final * 0.1;
+                valor_final = valor_final - desconto;
             }
 
             if (taxa === true) {
                 valor_final = valor_final + 15;
             }
+            
+            const resultado = await entregaModel.updateEntrega(valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, novo_status_entrega, novo_id_pedido, id_entrega);
+            console.log(resultado, valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, novo_status_entrega, novo_id_pedido, id_entrega)
 
-            const resultado = await entregaModel.insertEntrega(valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega, id_pedido, id_entrega);
-
-            return res.status(201).json({ message: "Pedido atualizado com sucesso", resultado });
+            return res.status(201).json({ message: "Entrega atualizada com sucesso", resultado });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: "Erro interno do servidor" });
@@ -202,7 +215,7 @@ const entregaController = {
                 return res.status(404).json("Pedido não encontrado");
             }
 
-            const resultado = await pedidoModel(entregaSelecionada);
+            const resultado = await entregaModel.deleteEntrega(id);
 
             return res.status(200).json({ message: "Entrega selecionada com sucesso!", resultado });
 
