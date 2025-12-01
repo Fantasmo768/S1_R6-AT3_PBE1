@@ -9,4 +9,31 @@ O projeto foi dividido em 3 etapas: Desenvolvimento do banco de dados (Com 3 tab
 
   ### Etapa 1: Desenvolvimento do banco de dados
 
-  O desenvolvimento do banco de dados se inicia com o modelo de entidade relacionamento. O modelo foi feito com objetivo de planejar os tipos de dados adequados para cada coluna da tabela, facilitando o desenvolvimento do banco de dados no SGBD (MySql WorkBench). Após a     realização do modelo de entidade relacionamneto, se inicia o desenvolvimento do banco de dados na ferramenta MySql WorkBench. Na ferramenta escolhida, foram criadas 3 tabelas (clientes, pedidos e entregas), para facilitar o desenvolvimento das entidades, foi utilizado a   funcionalidade do MySql WorkBench denominada de "Create New Schema", que permite a criação de um banco de dados através de uma interface gráfica. Na tabela de clientes as colunas necessárias foram: id_cliente (AI NN PK INT), nome (VARCHAR(50) NN), sobrenome(VARCHAR(255)   NN), cpf (UQ NN CHAR(11)), telefone (varchar(25) NN), email (NN UQ VARCHAR(150)), logradouro (NN VARCHAR(255)), numero (NN VARCHAR(10)), bairro (NN VARCHAR(50)), estado(NN VARCHAR(30)), cep (NN CHAR(8)) e cidade (VARCHAR(?) NN). Na entidade de pedidos os campos            necessários foram: id_pedido (AI NN PK INT), data_pedido (NN DATE), entrega_urgente (NN BOOLEAN), distancia (DECIMAL (10,2) NN), peso (DECIMAL(10,2) NN), valor_km (DECIMAL(10,2) NN), valor_kg (DECIMAL(10,2) NN), id_cliente (NN FK INT). Na tabela entregas os atributos      necessários foram: id_entrega (AI NN PK INT), 
+  O desenvolvimento do banco de dados se inicia com o modelo de entidade relacionamento. O modelo foi feito com objetivo de planejar os tipos de dados adequados para cada coluna da tabela, facilitando o desenvolvimento do banco de dados no SGBD (MySql WorkBench). Após a     realização do modelo de entidade relacionamneto, se inicia o desenvolvimento do banco de dados na ferramenta MySql WorkBench. Na ferramenta escolhida, foram criadas 3 tabelas (clientes, pedidos e entregas), para facilitar o desenvolvimento das entidades, foi utilizado a   funcionalidade do MySql WorkBench denominada de "Create New Schema", que permite a criação de um banco de dados através de uma interface gráfica.
+Na tabela de clientes as colunas necessárias foram: 
+- id_cliente (AI NN PK INT); 
+- nome (VARCHAR(50) NN);
+- sobrenome(VARCHAR(255) NN);
+- cpf (UQ NN CHAR(11));
+- telefone (varchar(25) NN);
+- email (NN UQ VARCHAR(150));
+- logradouro (NN VARCHAR(255));
+- numero (NN VARCHAR(10));
+- bairro (NN VARCHAR(50));
+- estado(NN VARCHAR(30));
+- cep (NN CHAR(8));
+- cidade (VARCHAR(?) NN).
+
+Na entidade de pedidos os campos necessários foram: 
+- id_pedido (AI NN PK INT);
+- data_pedido (NN DATE);
+- entrega_urgente (NN BOOLEAN);
+- distancia (DECIMAL (10,2) NN);
+- peso (DECIMAL(10,2) NN);
+- valor_km (DECIMAL(10,2) NN);
+- valor_kg (DECIMAL(10,2) NN);
+- id_cliente (NN FK INT).
+
+Na tabela entregas os atributos necessários foram: 
+- id_entrega (AI NN PK INT);
+-  
