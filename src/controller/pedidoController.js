@@ -169,7 +169,7 @@ const pedidoController = {
             const valor_kg_num = Number(valor_kg);
             const entrega_urgente_bool = Boolean(entrega_urgente);
 
-            if (!data_pedido || !entrega_urgente || !distancia || !peso || !valor_km || !id_cliente || !valor_kg || !Number.isInteger(id_cliente_num) || typeof entrega_urgente_bool !== "boolean" || typeof distancia_num !== "number" || typeof peso_num !== "number" || typeof valor_km_num !== "number" || typeof valor_kg_num !== "number" || distancia_num <= 0 || peso_num <= 0) {
+            if (!data_pedido || entrega_urgente === undefined || entrega_urgente === null || !distancia || !peso || !valor_km || !id_cliente || !valor_kg || !Number.isInteger(id_cliente_num) || typeof entrega_urgente_bool !== "boolean" || typeof distancia_num !== "number" || typeof peso_num !== "number" || typeof valor_km_num !== "number" || typeof valor_kg_num !== "number" || distancia_num <= 0 || peso_num <= 0) {
                 return res.status(405).json({ message: "Você inseriu os valores de maneira inadequada." });
             }
 
@@ -320,7 +320,7 @@ const pedidoController = {
             const status_entrega_string = String(status_entrega);
             const entrega_urgente_bool = Boolean(nova_entrega_urgente);
 
-            if (!nova_data || !nova_entrega_urgente || !nova_distancia || !novo_peso || !novo_valor_km || !novo_valor_kg || !novo_id_cliente || !novo_status_entrega || typeof status_entrega_string !== "string" || !Number.isInteger(id_cliente_num) || typeof entrega_urgente_bool !== "boolean" || typeof distancia_num !== "number" || typeof peso_num !== "number" || typeof valor_km_num !== "number" || typeof valor_kg_num !== "number" || distancia_num <= 0 || peso_num <= 0) {
+            if (!nova_data || nova_entrega_urgente === undefined || nova_entrega_urgente === null || !nova_distancia || !novo_peso || !novo_valor_km || !novo_valor_kg || !novo_id_cliente || !novo_status_entrega || typeof status_entrega_string !== "string" || !Number.isInteger(id_cliente_num) || typeof entrega_urgente_bool !== "boolean" || typeof distancia_num !== "number" || typeof peso_num !== "number" || typeof valor_km_num !== "number" || typeof valor_kg_num !== "number" || distancia_num <= 0 || peso_num <= 0) {
                 return res.status(400).json({ message: "Você inseriu os valores de maneira inadequada." });
             }
 

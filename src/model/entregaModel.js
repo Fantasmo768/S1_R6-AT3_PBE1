@@ -183,7 +183,7 @@ const entregaModel = {
             const valuesInsert = [valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega, id_pedido, id_entrega];
             const [rowsInsert] = await connection.query(sqlInsert, valuesInsert);
 
-            connection.commit();
+            await connection.commit();
 
             return rowsInsert;
 

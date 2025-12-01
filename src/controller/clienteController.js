@@ -231,9 +231,9 @@ const clienteController = {
             if (!Number.isInteger(id_num) || !id) {
                 return res.status(405).json({ message: "O id não é válido" });
             }
-            console.log(cpf_cliente)
+
             const clienteAtual = await clienteModel.buscarPorId(id);
-            console.log(clienteAtual[0])
+
             if (clienteAtual.length === 0) {
                 return res.status(404).json({ message: "Cliente não encontrado" });
             }
@@ -267,7 +267,12 @@ const clienteController = {
                 return res.status(409).json({ message: "Cpf já existente" });
             }
 
+
             const resultado = await clienteModel.updateCliente(novo_nome, novo_sobrenome, novo_cpf, novo_telefone, novo_email, novo_logradouro, novo_numero, novo_bairro, novo_estado, novo_cep, nova_cidade, id);
+
+            if(resultado.changedRows === 0) {
+                return res.status(400).json({message: "Você não alterou nenhum valor"})
+            }
 
             return res.status(200).json({ message: "Cliente atualizado com sucesso", resultado });
         } catch (error) {
