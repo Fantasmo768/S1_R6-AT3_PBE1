@@ -90,7 +90,7 @@ const entregaController = {
  * }
  */
 
-    selectEntregaPorId: async (req, res) => {
+    buscarPorId: async (req, res) => {
         try {
             const { id_entrega } = req.params;
 

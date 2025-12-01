@@ -1,5 +1,5 @@
 const { clienteModel } = require('../model/clienteModel');
-const {pedidoModel} = require('../model/pedidoModel');
+const { pedidoModel } = require('../model/pedidoModel');
 const clienteController = {
 
     /**
@@ -153,7 +153,7 @@ const clienteController = {
             const telefone_string = String(telefone.trim());
             const email_string = String(email.trim());
 
-            if (!nome_cliente || !sobrenome_cliente || !cpf_cliente || !telefone || !email || !logradouro || !numero || !bairro || !cidade || !estado || !cep || cep_string.length !== 8 || cpf_cliente_string.length !== 11 || telefone_string.length < 8 || nome_string.length < 3 || nome_string.length > 50 || sobrenome_string.length < 3 || sobrenome_string.length > 255 || !email_string.includes("@") || email_string.length < 5) {
+            if (!nome_cliente || !sobrenome_cliente || !cpf_cliente || !telefone || !email || !logradouro || !numero || !bairro || !cidade || !estado || !cep || cep_string.length !== 8 || cpf_cliente.length !== 11 || telefone_string.length < 8 || nome_string.length < 3 || nome_string.length > 50 || sobrenome_string.length < 3 || sobrenome_string.length > 255 || !email_string.includes("@") || email_string.length < 5) {
                 return res.status(405).json({ message: "Você inseriu valores de maneira inadequada" });
             }
 
@@ -308,28 +308,28 @@ const clienteController = {
 
     deletarCliente: async (req, res) => {
         try {
-        const id = req.params.id;
-        const id_num = Number(id);
+            const id = req.params.id;
+            const id_num = Number(id);
 
-        if (!id || !Number.isInteger(id_num)) {
-            return res.status(400).json({ message: "Insira um id válido" });
-        }
+            if (!id || !Number.isInteger(id_num)) {
+                return res.status(400).json({ message: "Insira um id válido" });
+            }
 
-        const clienteSelecionado = await clienteModel.buscarPorId(id);
+            const clienteSelecionado = await clienteModel.buscarPorId(id);
 
-        if (clienteSelecionado.length === 0) {
-            return res.status(404).json({message:"Cliente não encontrado"});
-        }
+            if (clienteSelecionado.length === 0) {
+                return res.status(404).json({ message: "Cliente não encontrado" });
+            }
 
-        const pedidoRelacionado = await pedidoModel.buscarPedidosPorCliente(id)
+            const pedidoRelacionado = await pedidoModel.buscarPedidosPorCliente(id)
 
-        if(pedidoRelacionado.length !== 0) {
-            return res.status(400).json({message: "Ainda existem pedidos relacionados ao cliente. Delete o pedido primeiro."})
-        }
+            if (pedidoRelacionado.length !== 0) {
+                return res.status(400).json({ message: "Ainda existem pedidos relacionados ao cliente. Delete o pedido primeiro." })
+            }
 
-        const resultado = await clienteModel.deleteCliente(id);
+            const resultado = await clienteModel.deleteCliente(id);
 
-        return res.status(200).json({message: "Cliente deletado com sucesso!", resultado});
+            return res.status(200).json({ message: "Cliente deletado com sucesso!", resultado });
 
         } catch (error) {
             console.error(error);

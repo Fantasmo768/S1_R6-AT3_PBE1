@@ -224,6 +224,33 @@ const entregaModel = {
             throw error;
         }
     },
+
+     /**
+     * @async
+     * @function buscarEntregaPorPedido
+     * Busca todas as entregas associadas a um pedido específico.
+     * @param {Number} id_pedido Identificador do pedido que será utilizado na pesquisa.
+     * @returns {Promise<Array<Object>>} Retorna um array com os registros da tabela "entregas" que possuem o mesmo id_pedido_fk informado.
+     * 
+     * @example
+     * const entregas = await entregaModel.buscarEntregaPorPedido(10);
+     * console.log(entregas);
+     * // Resultado esperado:
+     * // [
+     * //   {
+     * //     id_entrega: 5,
+     * //     valor_distancia: 12.50,
+     * //     valor_peso: 8.30,
+     * //     acrescimo: 0,
+     * //     desconto: 0,
+     * //     taxa: 4.50,
+     * //     valor_final: 25.30,
+     * //     status_entrega: "concluída",
+     * //     id_pedido_fk: 10
+     * //   }
+     * // ]
+     */
+    
     buscarEntregaPorPedido: async (id_pedido) => {
         const connection = await pool.getConnection();
         try {

@@ -295,6 +295,40 @@ const pedidoModel = {
             throw error;
         }
     },
+
+    /**
+     * @async
+     * @function buscarPedidosPorCliente
+     * Busca todos os pedidos vinculados a um cliente específico.
+     * @param {Number} id_cliente Identificador do cliente que será utilizado na pesquisa.
+     * @returns {Promise<Array<Object>>} Retorna um array contendo todos os registros da tabela "pedidos" associados ao cliente informado.
+     * 
+     * @example
+     * const pedidos = await pedidoModel.buscarPedidosPorCliente(3);
+     * console.log(pedidos);
+     * // Resultado esperado:
+     * // [
+     * //   {
+     * //     id_pedido: 12,
+     * //     distancia: 15,
+     * //     peso: 3.2,
+     * //     valor_km: 1.50,
+     * //     valor_kg: 2.00,
+     * //     data_pedido: "2025-01-10",
+     * //     id_cliente_fk: 3
+     * //   },
+     * //   {
+     * //     id_pedido: 18,
+     * //     distancia: 22,
+     * //     peso: 5.0,
+     * //     valor_km: 1.50,
+     * //     valor_kg: 2.00,
+     * //     data_pedido: "2025-01-15",
+     * //     id_cliente_fk: 3
+     * //   }
+     * // ]
+     */
+
     buscarPedidosPorCliente: async (id_cliente) => {
         const connection = await pool.getConnection();
         try {
