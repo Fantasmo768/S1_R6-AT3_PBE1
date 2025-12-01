@@ -3,6 +3,42 @@ const { entregaModel } = require("../model/entregaModel");
 
 const entregaController = {
 
+    /**
+ * @async
+ * @function buscarTodos
+ * Busca todas as entregas cadastradas no banco de dados.
+ *
+ * @param {Object} req Objeto de requisição HTTP.
+ * @param {Object} res Objeto de resposta HTTP usado para enviar os dados ou erros.
+ *
+ * @returns {Promise<Object>} Retorna um array contendo todas as entregas cadastradas.
+ * Caso não exista nenhuma entrega, retorna uma mensagem informando isso.
+ *
+ * @throws {500} Se ocorrer algum erro ao buscar as entregas no banco de dados.
+ *
+ * @example
+ * // Requisição GET:
+ * // GET /entregas
+ *
+ * // Resposta esperada:
+ * [
+ *   {
+ *     "id_entrega": 1,
+ *     "id_cliente": 3,
+ *     "status": "Em transporte",
+ *     "data_envio": "2024-05-10",
+ *     "data_entrega": null
+ *   },
+ *   {
+ *     "id_entrega": 2,
+ *     "id_cliente": 1,
+ *     "status": "Entregue",
+ *     "data_envio": "2024-04-22",
+ *     "data_entrega": "2024-04-30"
+ *   }
+ * ]
+ */
+
     buscarTodos: async (req, res) => {
         try {
             const entregas = await entregaModel.buscarTodasEntregas();;
@@ -19,6 +55,40 @@ const entregaController = {
             });
         }
     },
+
+    /**
+ * @async
+ * @function buscarPorId
+ * Busca uma entrega específica pelo identificador informado nos parâmetros da requisição.
+ *
+ * @param {Object} req Objeto de requisição HTTP contendo o parâmetro `id_entrega`.
+ * @param {Object} res Objeto de resposta HTTP usado para retornar o resultado ou mensagens de erro.
+ *
+ * @returns {Promise<Object>} Retorna o objeto da entrega correspondente ao ID informado.
+ * Caso o ID seja inválido ou a entrega não exista, retorna uma mensagem apropriada.
+ *
+ * @throws {400} Caso o ID informado não seja válido.
+ * @throws {404} Caso nenhuma entrega seja encontrada com o ID especificado.
+ * @throws {500} Caso ocorra algum erro interno ao buscar a entrega.
+ *
+ * @example
+ * // Requisição GET:
+ * // GET /entregas/5
+ *
+ * // Resposta esperada:
+ * {
+ *   "message": "entrega:",
+ *   "resultado": [
+ *     {
+ *       "id_entrega": 5,
+ *       "id_cliente": 2,
+ *       "status": "Entregue",
+ *       "data_envio": "2024-05-01",
+ *       "data_entrega": "2024-05-05"
+ *     }
+ *   ]
+ * }
+ */
 
     selectEntregaPorId: async (req, res) => {
         try {
@@ -44,6 +114,54 @@ const entregaController = {
             });
         }
     },
+
+    /**
+ * @async
+ * @function adicionarEntrega
+ * Adiciona uma nova entrega com base nos dados enviados no corpo da requisição
+ * e nas informações calculadas do pedido associado.
+ *
+ * @param {Object} req Objeto de requisição HTTP contendo `status_entrega` e `id_pedido` no corpo.
+ * @param {Object} res Objeto de resposta HTTP usado para retornar mensagens e os dados inseridos.
+ *
+ * @returns {Promise<Object>} Retorna a confirmação da criação da entrega junto dos dados inseridos.
+ *
+ * @throws {400} Caso algum valor obrigatório seja inválido, ausente ou com formato inadequado.
+ * @throws {404} Caso o pedido informado não exista (tratado no model, se aplicável).
+ * @throws {500} Caso ocorra um erro inesperado no servidor.
+ *
+ * @description
+ * A função também realiza os seguintes cálculos automaticamente com base nos dados do pedido:
+ *  - **valor_distancia** = distância × valor_km  
+ *  - **valor_peso** = peso × valor_kg  
+ *  - **acréscimo** de 20% se a entrega for urgente  
+ *  - **desconto** de 10% se o valor final ultrapassar R$ 500  
+ *  - **taxa fixa** caso o peso ultrapasse 50 kg  
+ *  - **valor_final** resultante após acréscimos, descontos e taxas
+ *
+ * @example
+ * // POST /entregas
+ * {
+ *   "status_entrega": "calculado",
+ *   "id_pedido": 12
+ * }
+ *
+ * // Resposta esperada:
+ * {
+ *   "message": "Entrega adicionada com sucesso",
+ *   "resultado": {
+ *      "id_entrega": 34,
+ *      "valor_distancia": 150,
+ *      "valor_peso": 80,
+ *      "acrescimo": 46,
+ *      "desconto": 0,
+ *      "taxa": false,
+ *      "valor_final": 276,
+ *      "status_entrega": "calculado",
+ *      "id_pedido_fk": 12
+ *   }
+ * }
+ */
 
     adicionarEntrega: async (req, res) => {
 
@@ -119,6 +237,62 @@ const entregaController = {
 
 
     },
+
+    /**
+ * @async
+ * @function atualizarEntrega
+ * Atualiza uma entrega existente no banco de dados,
+ * recalculando automaticamente todos os valores relacionados ao pedido.
+ *
+ * @param {Object} req Objeto de requisição HTTP contendo:
+ *  - `id_entrega` nos parâmetros da URL
+ *  - `status_entrega` e `id_pedido` no corpo da requisição
+ *
+ * @param {Object} res Objeto de resposta HTTP usado para retornar os resultados e mensagens.
+ *
+ * @returns {Promise<Object>} Retorna a confirmação da atualização e os dados processados.
+ *
+ * @throws {400} Caso o ID seja inválido ou fora do formato correto.
+ * @throws {405} Caso qualquer dado obrigatório seja inserido de forma inadequada.
+ * @throws {404} Caso a entrega/pedido não exista (dependendo de validação no model).
+ * @throws {500} Caso ocorra algum erro inesperado no servidor.
+ *
+ * @description
+ * A função recalcula automaticamente todos os campos relacionados ao custo da entrega:
+ *
+ *  - **valor_distancia** = distância × valor_km  
+ *  - **valor_peso** = peso × valor_kg  
+ *  - **acréscimo** de 20% se a entrega for urgente  
+ *  - **desconto** de 10% se o valor final ultrapassar R$ 500  
+ *  - **taxa fixa** caso o peso ultrapasse 50 kg  
+ *  - **valor_final** = valor_base + acréscimos − descontos + taxa  
+ *
+ * Também permite atualização parcial: caso algum campo não seja enviado,
+ * o valor atual da entrega será mantido.
+ *
+ * @example
+ * // PUT /entregas/10
+ * {
+ *   "status_entrega": "em transito",
+ *   "id_pedido": 3
+ * }
+ *
+ * // Resposta esperada:
+ * {
+ *   "message": "Pedido atualizado com sucesso",
+ *   "resultado": {
+ *      "id_entrega": 10,
+ *      "valor_distancia": 120,
+ *      "valor_peso": 40,
+ *      "acrescimo": 24,
+ *      "desconto": 0,
+ *      "taxa": false,
+ *      "valor_final": 184,
+ *      "status_entrega": "em transito",
+ *      "id_pedido_fk": 3
+ *   }
+ * }
+ */
 
     atualizarEntrega: async (req, res) => {
         try {
@@ -200,6 +374,32 @@ const entregaController = {
         }
     },
 
+    /**
+ * @async
+ * @function deletarEntrega
+ * Deleta uma entrega específica do banco de dados de acordo com o ID informado.
+ *
+ * @param {Object} req Objeto de requisição HTTP contendo:
+ *  - `params.id` → ID da entrega a ser deletada.
+ *
+ * @param {Object} res Objeto de resposta HTTP usado para enviar a resposta ao cliente.
+ *
+ * @returns {Promise<Object>} Retorna uma mensagem de sucesso e o resultado da remoção no banco.
+ *
+ * @throws {400} Caso o ID não seja válido.
+ * @throws {404} Caso a entrega não seja encontrada.
+ * @throws {500} Caso ocorra algum erro inesperado no servidor.
+ *
+ * @example
+ * // DELETE /entregas/3
+ * const resposta = await entregaController.deletarEntrega(req, res);
+ *
+ * // Resultado esperado
+ * {
+ *   "message": "Entrega deletada com sucesso!",
+ *   "resultado": { "affectedRows": 1 }
+ * }
+ */
     deletarEntrega: async (req, res) => {
         try {
             const id = req.params.id;
