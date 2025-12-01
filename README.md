@@ -9,7 +9,8 @@ O projeto foi dividido em 3 etapas: Desenvolvimento do banco de dados (Com 3 tab
 
   ### Etapa 1: Desenvolvimento do banco de dados
 
-  O desenvolvimento do banco de dados se inicia com o modelo de entidade relacionamento. O modelo foi feito com objetivo de planejar os tipos de dados adequados para cada coluna da tabela, facilitando o desenvolvimento do banco de dados no SGBD (MySql WorkBench). Após a     realização do modelo de entidade relacionamneto, se inicia o desenvolvimento do banco de dados na ferramenta MySql WorkBench. Na ferramenta escolhida, foram criadas 3 tabelas (clientes, pedidos e entregas), para facilitar o desenvolvimento das entidades, foi utilizado a   funcionalidade do MySql WorkBench denominada de "Create New Schema", que permite a criação de um banco de dados através de uma interface gráfica.
+  O desenvolvimento do banco de dados se inicia com o modelo de entidade relacionamento. O modelo foi feito com objetivo de planejar os tipos de dados adequados para cada coluna da tabela, facilitando o desenvolvimento do banco de dados no SGBD (MySql WorkBench). Após a realização do modelo de entidade relacionamneto, se inicia o desenvolvimento do banco de dados na ferramenta MySql WorkBench. Na ferramenta escolhida, foram criadas 3 tabelas (clientes, pedidos e entregas), para facilitar o desenvolvimento das entidades, foi utilizado a   funcionalidade do MySql WorkBench denominada de "Create New Schema", que permite a criação de um banco de dados através de uma interface gráfica.
+  
 Na tabela de clientes as colunas necessárias foram: 
 - id_cliente (AI NN PK INT); 
 - nome (VARCHAR(50) NN);
@@ -22,7 +23,7 @@ Na tabela de clientes as colunas necessárias foram:
 - bairro (NN VARCHAR(50));
 - estado(NN VARCHAR(30));
 - cep (NN CHAR(8));
-- cidade (VARCHAR(?) NN).
+- cidade (VARCHAR(255) NN).
 
 Na entidade de pedidos os campos necessários foram: 
 - id_pedido (AI NN PK INT);
@@ -36,4 +37,17 @@ Na entidade de pedidos os campos necessários foram:
 
 Na tabela entregas os atributos necessários foram: 
 - id_entrega (AI NN PK INT);
--  
+- valor_distancia (NN DECIMAL(10,2));
+- valor_peso (NN DECIMAL(10,2));
+- acrescimo (NN, DECIMAL(10,2));
+- desconto (NN, DECIMAL(10,2));
+- taxa (NN, BOOLEAN));
+- valor_final (NN DECIMAL(10,2));
+- status_entrega (NN ENUM);
+- id_pedido (NN FK INT).
+
+### Etapa 2 Desenvolvimento das funcionalidades básicas do projeto
+Após o desenvolvimento do banco de dados, se inicia o desenvolvimento das funcionalidades básicas do projeto, sendo elas: Insert de clientes, pedidos e entregas. O projeto foi feito utilizando a arquitetura MVC (OBS: o view não foi utilizado pois o front-end não foi solicitado), com cada entidade tendo seu próprio controller, model e routes. O desenvolvimento . A programação se inicia com o arquivo db.js, presente em src/config, o arquivo é responsável pela configuração do banco de dados (configurando o host, user, database, port e os limites de conexão). Em seguida vem a criação do arquivo server.js, que será responsável por receber todas as rotas configuradas e todos os jsons enviados e abrir o servidor escutando à porta 8081.
+
+#### Insert de clientes
+
