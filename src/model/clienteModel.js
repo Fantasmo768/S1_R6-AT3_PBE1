@@ -68,7 +68,7 @@ const clienteModel = {
             (nome, sobrenome, cpf, telefone, email, logradouro, numero, bairro, estado, cep, cidade)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
-        const values = [nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep];
+        const values = [nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, estado, cep, cidade];
 
         const [rows] = await pool.query(sql, values);
         return rows;

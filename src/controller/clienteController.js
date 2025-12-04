@@ -153,7 +153,7 @@ const clienteController = {
             const telefone_string = String(telefone.trim());
             const email_string = String(email.trim());
 
-            if (!nome_cliente || !sobrenome_cliente || !cpf_cliente || !telefone || !email || !logradouro || !numero || !bairro || !cidade || !estado || !cep || cep_string.length !== 8 || cpf_cliente.length !== 11 || telefone_string.length < 8 || nome_string.length < 3 || nome_string.length > 50 || sobrenome_string.length < 3 || sobrenome_string.length > 255 || !email_string.includes("@") || email_string.length < 5) {
+            if (!nome_cliente || !sobrenome_cliente || !cpf_cliente || !telefone || !email || !logradouro || !numero || !bairro || !cidade || !estado || !cep || cep_string.length !== 8 || cpf_cliente_string.length !== 11 || telefone_string.length < 8 || nome_string.length < 3 || nome_string.length > 50 || sobrenome_string.length < 3 || sobrenome_string.length > 255 || !email_string.includes("@") || email_string.length < 5) {
                 return res.status(405).json({ message: "Você inseriu valores de maneira inadequada" });
             }
 
@@ -249,6 +249,8 @@ const clienteController = {
             const novo_estado = estado ?? clienteAtual[0].estado;
             const novo_cep = cep ?? clienteAtual[0].cep;
             const nova_cidade = cidade ?? clienteAtual[0].cidade;
+
+            console.log(novo_nome, novo_sobrenome, novo_cpf, novo_telefone, novo_email, novo_logradouro, novo_numero, novo_bairro, novo_estado, novo_cep, nova_cidade);
 
             const nome_string = String(novo_nome.trim());
             const sobrenome_string = String(novo_sobrenome.trim());

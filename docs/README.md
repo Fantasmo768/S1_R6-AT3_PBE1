@@ -1,60 +1,165 @@
 # S1_R6-AT3_PBE1
 
 ## Introdução
-Este é um projeto desenvolvido por alunos do SENAI, em função da empresa Rápido & Seguro Logística. O escopo inicial do projeto é desenvolver uma API capaz de registrar clientes, pedidos e entregas ao banco de dados da empresa. O cliente está passando por problemas no registro de entrega, sendo necessário um sistema eficiente para calcular e registrar os valores das entregas de maneira automatizada. A API foi desenvolvida, para suprir novas necessidades citadas anteriormente que a empresa enfrenta devido ao crescimento acelerado no mercado. Com base nas necessidades da empresa e do escopo, foram desenvolvidas funções para adicionar, buscar, deletar e atualizar clientes, pedidos e entregas no banco de dados da corporação. Para a realização da proposta, foram utilizadas as seguintes tecnologias: Node.js (com auxílio dos Frameworks express e mysql2), MySQL e versionamento com github.
+Este é um projeto desenvolvido por alunos do SENAI, em função da empresa Rápido & Seguro Logística. O escopo inicial do projeto é desenvolver uma API capaz de registrar clientes, pedidos e entregas ao banco de dados da empresa. O cliente está passando por problemas no registro de entrega, sendo necessário um sistema eficiente para calcular e registrar os valores das entregas de maneira automatizada. A API foi desenvolvida, para suprir novas necessidades citadas anteriormente que a empresa enfrenta devido ao crescimento acelerado no mercado. Com base nas necessidades da empresa e do escopo, foram desenvolvidas funções para adicionar, buscar, deletar e atualizar clientes, pedidos e entregas no banco de dados da corporação.
 
-## Etapas do projeto
+Tecnologias usadas:
+- Node.js
+- Express
+- mysql2
+- MySQL
+- Git (GitHub)
 
-O projeto foi dividido em 3 etapas: Desenvolvimento do banco de dados (Com 3 tabelas clientes, pedidos e entregas), desenvolvimento das funcionalidades básicas para cada tabela no banco de dados e desenvolvimento de funções adicionais para qualidade de usuabilidade no sistema.
+## Estrutura do projeto
+- src/
+  - config/
+    - db.js             (configuração da conexão MySQL)
+  - controller/
+    - clienteController.js
+    - pedidoController.js
+    - entregaController.js
+  - model/
+    - clienteModel.js
+    - pedidoModel.js
+    - entregaModel.js
+  - routes/
+    - clienteRoutes.js
+    - pedidoRoutes.js
+    - entregaRoutes.js
+    - routes.js
+  - server.js           (inicia o servidor)
+- docs/
+  - README.md
+- .gitignore
+- package.json
 
-  ### Etapa 1: Desenvolvimento do banco de dados
+## Banco de dados
+O banco possui 3 tabelas principais: clientes, pedidos e entregas. A ordem lógica de criação/uso é: clientes → pedidos → entregas.
 
-  O desenvolvimento do banco de dados se inicia com o modelo de entidade relacionamento. O modelo foi feito com objetivo de planejar os tipos de dados adequados para cada coluna da tabela, facilitando o desenvolvimento do banco de dados no SGBD (MySql WorkBench). Após a realização do modelo de entidade relacionamneto, se inicia o desenvolvimento do banco de dados na ferramenta MySql WorkBench. Na ferramenta escolhida, foram criadas 3 tabelas (clientes, pedidos e entregas), para facilitar o desenvolvimento das entidades, foi utilizado a   funcionalidade do MySql WorkBench denominada de "Create New Schema", que permite a criação de um banco de dados através de uma interface gráfica.
-  
-Na tabela de clientes as colunas necessárias foram: 
-- id_cliente (AI NN PK INT); 
-- nome (VARCHAR(50) NN);
-- sobrenome(VARCHAR(255) NN);
-- cpf (UQ NN CHAR(11));
-- telefone (varchar(25) NN);
-- email (NN UQ VARCHAR(150));
-- logradouro (NN VARCHAR(255));
-- numero (NN VARCHAR(10));
-- bairro (NN VARCHAR(50));
-- estado(NN VARCHAR(30));
-- cep (NN CHAR(8));
-- cidade (VARCHAR(255) NN).
+Criação das tabelas (utilizando linguagem sql e MysqlWorkbench):
+```sql
+CREATE TABLE clientes (
+  id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(50) NOT NULL,
+  sobrenome VARCHAR(255) NOT NULL,
+  cpf CHAR(11) NOT NULL UNIQUE,
+  telefone VARCHAR(25) NOT NULL,
+  email VARCHAR(150) NOT NULL UNIQUE,
+  logradouro VARCHAR(255) NOT NULL,
+  numero VARCHAR(10) NOT NULL,
+  bairro VARCHAR(50) NOT NULL,
+  estado VARCHAR(30) NOT NULL,
+  cep CHAR(8) NOT NULL,
+  cidade VARCHAR(255) NOT NULL
+);
 
-Na entidade de pedidos os campos necessários foram: 
-- id_pedido (AI NN PK INT);
-- data_pedido (NN DATE);
-- entrega_urgente (NN BOOLEAN);
-- distancia (DECIMAL (10,2) NN);
-- peso (DECIMAL(10,2) NN);
-- valor_km (DECIMAL(10,2) NN);
-- valor_kg (DECIMAL(10,2) NN);
-- id_cliente (NN FK INT).
+CREATE TABLE pedidos (
+  id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+  data_pedido DATE NOT NULL,
+  entrega_urgente BOOLEAN NOT NULL,
+  distancia DECIMAL(10,2) NOT NULL,
+  peso DECIMAL(10,2) NOT NULL,
+  valor_km DECIMAL(10,2) NOT NULL,
+  valor_kg DECIMAL(10,2) NOT NULL,
+  id_cliente INT NOT NULL,
+  FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+);
 
-Na tabela entregas os atributos necessários foram: 
-- id_entrega (AI NN PK INT);
-- valor_distancia (NN DECIMAL(10,2));
-- valor_peso (NN DECIMAL(10,2));
-- acrescimo (NN, DECIMAL(10,2));
-- desconto (NN, DECIMAL(10,2));
-- taxa (NN, BOOLEAN);
-- valor_final (NN DECIMAL(10,2));
-- status_entrega (NN ENUM);
-- id_pedido (NN FK INT).
+CREATE TABLE entregas (
+  id_entrega INT AUTO_INCREMENT PRIMARY KEY,
+  valor_distancia DECIMAL(10,2) NOT NULL,
+  valor_peso DECIMAL(10,2) NOT NULL,
+  acrescimo DECIMAL(10,2) NOT NULL,
+  desconto DECIMAL(10,2) NOT NULL,
+  taxa BOOLEAN NOT NULL,
+  valor_final DECIMAL(10,2) NOT NULL,
+  status_entrega ENUM('pendente','em_transito','entregue','cancelado') NOT NULL,
+  id_pedido INT NOT NULL,
+  FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
+);
+```
 
-### Etapa 2 Desenvolvimento das funcionalidades básicas do projeto
-Após o desenvolvimento do banco de dados, se inicia o desenvolvimento das funcionalidades básicas do projeto, sendo elas: Insert de clientes, pedidos e entregas. O projeto foi feito utilizando a arquitetura MVC (OBS: o view não foi utilizado pois o front-end não foi solicitado), com cada entidade tendo seu próprio controller, model e routes. Para iniciação adequada do projeto é necessário executar no terminal os seguintes comandos: npm init -y, npm install express mysql2. Estes comandos certificam a instalação de todas as bibliotecas necessárias para o funcionamento adequado do programa. A programação se inicia com o arquivo db.js, presente em src/config, o arquivo é responsável pela configuração do banco de dados (configurando o host, user, database, port e os limites de conexão). Em seguida vem a criação do arquivo server.js, que será responsável por receber todas as rotas configuradas e todos os jsons enviados e abrir o servidor escutando à porta 8081. Ao final da configuração inicial do servidor foi adicionado um arquivo nomeado de .gitignore, para não enviar pastas ou arquivos pesadps ao repositório remoto (node_modules e package-lock.json). _OBS: As etapas de desenvolvimento seguem a ordem específica de cliente > pedidos > entregas, pois clientes não depende de nenhuma entidade, pedidos depende de clientes e entregas depende de pedidos.
+## Regras de negócio principais
+- valor_distancia = distancia * valor_km
+- valor_peso = peso * valor_kg
+- acrescimo: aplicado quando entrega_urgente = true (implementação no controller — percentual ou valor fixo conforme código)
+- desconto: subtraído do total quando informado
+- taxa (boolean): controla aplicação de taxa fixa/variável (ver controller)
+- valor_final = valor_distancia + valor_peso + acrescimo - desconto (+ taxa se aplicável)
+- status_entrega inicial: "pendente"
 
-#### Insert de clientes
-Após a configuração inicial do programa, foi feito as funções do model necessárias para a realização do insert de clientes. As funções primariamente desenvolvidas do model foram: selecionarTodos, inserirCliente e buscarPorId, nessa ordem, todas presente no caminho "../src/model/clienteModel.js". Todas estas funções são assíncronas para ser possível a utilização do "await", que permite certas partes do código esperarem eventos ocorrerem, evitando possíveis erros relacionados à atrasos de resposta. Todas estas funções possuem um modelo específico, em que se envia uma linha de comando sql para ser executado no banco de dados com os parâmetros que forem enviados (no caso de selecionarTodos nenhum parâmetro é enviado, pois não existe nenhuma seleção específica).
+## Instalação e execução (Windows)
+1. Abra o terminal no diretório do projeto:
+   cd c:\Users\DES-I1HS\Desktop\AulasSENAI\Semestre2\PBE1\Exercicios\S1_R6-AT3_PBE1
+2. Instale dependências:
+   npm install express mysql2
+3. Configure src/config/db.js com credenciais MySQL (host, user, password, database, port).
+4. Inicie o servidor:
+   node server.js
+5. Servidor padrão: http://localhost:8081 (verificar server.js)
 
-Após a configuração completa do clienteModel, é necessário programar as funções do controller do insert de clientes. Nessa etapa do projeto foi desenvolvida apenas a função criarCliente, presente no caminho ../controller/clienteController.js. Assim como as funções da model, esta função é assíncrona para fazer o uso do await, pois é necessário esperar a resposta do model para o envio de parâmetros para a criação do cliente no banco de dados. Esta função coleta dados enviados pelo usuário em um corpo json enviados no corpo de uma requisição (nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, estado, cep e cidade) e os valores enviados pelo usuários serão enviados à função clienteModel.inserirCliente. Na função existem algumas checagens para verificar cpfs repetidos e se todos os valores foram enviados de maneira adequada. Após a realização da função, foram feitos testes e correções de erros encontrados. Esta função faz uso dos parâmetros req (requisição) e res (resposta), que são utilizados para pedir requisições e enviar respostas ao servidor.
+## Endpoints principais
 
-#### Insert de pedidos
-Seguidamente dos testes da função de insert clientes, se iniciou o desenvolvimento da funcionalidade de inserir pedidos na tabela do banco de dados. Assim como na etapa anterior, o desenvolvimento se dividiu entre as funções do pedidoModel e do pedidoController. O primeiro arquivo a ser configurado foi o pedidoModel.js (Caminho: "../src/model/pedidoModel.js"). Inicialmente a função desenvolvida no pedidoModel foi adicionarPedido, uma função assíncrona com uso do await. No momento o objetivo da função era apenas adicionar os pedidos ao banco de dados, sem nenhuma funcionalidade adicional. Para facilitar a implementação de funcionalidades futuras, foi utilizado o a função connection que permite a alteração de duas tabelas ao mesmo tempo em apenas uma função da model.
+Clientes
+- POST /clientes/adicionar — cria cliente
+  Corpo JSON: { nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, estado, cep, cidade }
+- GET /clientes — lista todos
+- GET /clientes/:id_cliente — busca por id
+- PUT /clientes/atulizar/:id — atualiza cliente
+- DELETE /clientes/deletar/:id — remove cliente
 
- Logo depois, veio a configuração da funcionalidade de insert de pedidos no pedidoController (Caminho: "../src/model/pedidoController.js"). No momento incial do desenvolvimento, foi criada apenas a função adicionarPedido no arquivo pedidoController.js. A função é assíncrona com uso do await. A função coleta todos os valores necessários para a criação de pedidos no banco de dados. Os valores são coletados a partir do arquivo json enviado no corpo da requisição, o json necessita de parâmetros específicos que serão enviados pelo usuário (data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente). Na função existem checagens dos tipos de valores que foram enviados e checagem se todos os valores 
+Pedidos
+- POST /pedidos/adicionar — cria pedido
+  Corpo JSON: { data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente, status_entrega }
+- GET /pedidos
+- GET /pedidos/:id_pedido
+- PUT /pedidos/atulizar/:id_pedido
+- DELETE /pedidos/deletar/:id
+
+Entregas
+- POST /entregas/adicionar — cria entrega (calcula valores automaticamente)
+  Corpo JSON mínimo: { status_entrega, id_pedido }
+- GET /entregas
+- GET /entregas/:id_entrega
+- PUT /entregas/atualizar/:id_entrega
+- DELETE /entregas/deletar/:id
+
+## Como utilizar a API e exemplos de uso
+Para utilização da API, é preferível o uso do insomnia ou curl (utilizando CMD). Observação para rotas PUT (update): Nesse tipo de rota _Não é necessário o envio de todos os dados do corpo JSON informados na rota POST, apenas aqueles que você quer atualizar.
+
+### Utilização e exemplos com CURL (windows)
+
+Para utilizar a api com curl, abra o prompt de comando do seu computador e digite o comando enviando todos os dados requisitados pelo sistema no corpo JSON (corpo JSON minímo de cada endpoint informado acima).
+
+#### Exemplos de comando com CURL para cada rota
+
+**POST /clientes/adicionar:**
+```curl -X POST http://localhost:8081/clientes/adicionar -H "Content-Type: application/json" -d "{\"nome_cliente\":\"Joao\",\"sobrenome_cliente\":\"Maziero\",\"cpf_cliente\":\"12345678908\",\"telefone\":\"11999999999\",\"email\":\"joao@gmail.com\",\"cep\":\"01001000\",\"logradouro\":\"Rua A\",\"numero\":100,\"bairro\":\"Centro\",\"cidade\":\"São Paulo\",\"estado\":\"São Paulo\"}"
+```
+
+**GET /clientes**
+```curl http://localhost:8081/clientes
+```
+
+**GET /clientes/id_cliente**
+```curl http://localhost:8081/clientes/1
+```
+
+**PUT /clientes/atualizar/id_cliente**
+```curl -X PUT http://localhost:8081/clientes/atualizar/3 -H "Content-Type: application/json" -d "{\"telefone\":\"11988887777\",\"email\":\"novoemail@gmail.com\"}"
+```
+
+Criar pedido:
+curl -X POST http://localhost:8081/pedidos -H "Content-Type: application/json" -d "{\"data_pedido\":\"2025-12-04\",\"entrega_urgente\":true,\"distancia\":10.5,\"peso\":2.3,\"valor_km\":1.20,\"valor_kg\":2.50,\"id_cliente\":1}"
+
+Criar entrega:
+curl -X POST http://localhost:8081/entregas -H "Content-Type: application/json" -d "{\"id_pedido\":1,\"distancia\":10.5,\"peso\":2.3,\"valor_km\":1.20,\"valor_kg\":2.50,\"entrega_urgente\":true,\"acrescimo\":0,\"desconto\":0,\"taxa\":false}"
+
+## Validações e tratamento de erros
+- Controllers validam campos obrigatórios e formatos básicos (CPF, email).
+- Respostas HTTP padronizadas: 201 (criado), 200 (sucesso), 400 (request inválido), 404 (não encontrado), 500 (erro servidor).
+- Transações são usadas em operações que afetam múltiplas tabelas (pedidos e entregas).
+
+## Contato / Autoria
+Autores: João Maziero e Luis Felipe
+Instrutor: Izaias Maia e Maycon Esprício
