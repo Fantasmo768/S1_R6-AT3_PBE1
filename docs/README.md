@@ -61,8 +61,8 @@ CREATE TABLE pedidos (
   peso DECIMAL(10,2) NOT NULL,
   valor_km DECIMAL(10,2) NOT NULL,
   valor_kg DECIMAL(10,2) NOT NULL,
-  id_cliente INT NOT NULL,
-  FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+  id_cliente_fk INT NOT NULL,
+  FOREIGN KEY (id_cliente_fk) REFERENCES clientes(id_cliente)
 );
 
 CREATE TABLE entregas (
@@ -73,9 +73,9 @@ CREATE TABLE entregas (
   desconto DECIMAL(10,2) NOT NULL,
   taxa BOOLEAN NOT NULL,
   valor_final DECIMAL(10,2) NOT NULL,
-  status_entrega ENUM('pendente','em_transito','entregue','cancelado') NOT NULL,
-  id_pedido INT NOT NULL,
-  FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
+  status_entrega ENUM('calculado','em transito','entregue','cancelado') NOT NULL,
+  id_pedido_fk INT NOT NULL,
+  FOREIGN KEY (id_pedido_fk) REFERENCES pedidos(id_pedido)
 );
 ```
 
@@ -125,38 +125,257 @@ Entregas
 - DELETE /entregas/deletar/:id
 
 ## Como utilizar a API e exemplos de uso
-Para utilização da API, é preferível o uso do insomnia ou curl (utilizando CMD). Observação para rotas PUT (update): Nesse tipo de rota _Não é necessário o envio de todos os dados do corpo JSON informados na rota POST, apenas aqueles que você quer atualizar.
+Para utilização da API, é preferível o uso do insomnia ou curl (utilizando CMD). Observação para rotas PUT (update): Nesse tipo de rota **NÃO** é necessário o envio de todos os dados do corpo JSON informados na rota POST, apenas aqueles que você quer atualizar.
 
-### Utilização e exemplos com CURL (windows)
+### Utilização e rotas com CURL (windows)
 
 Para utilizar a api com curl, abra o prompt de comando do seu computador e digite o comando enviando todos os dados requisitados pelo sistema no corpo JSON (corpo JSON minímo de cada endpoint informado acima).
 
-#### Exemplos de comando com CURL para cada rota
+#### Rotas com CURL e exemplos para cada rota
 
-**POST /clientes/adicionar:**
-```curl -X POST http://localhost:8081/clientes/adicionar -H "Content-Type: application/json" -d "{\"nome_cliente\":\"Joao\",\"sobrenome_cliente\":\"Maziero\",\"cpf_cliente\":\"12345678908\",\"telefone\":\"11999999999\",\"email\":\"joao@gmail.com\",\"cep\":\"01001000\",\"logradouro\":\"Rua A\",\"numero\":100,\"bairro\":\"Centro\",\"cidade\":\"São Paulo\",\"estado\":\"São Paulo\"}"
+**POST /clientes/adicionar**
+```curl
+curl -X POST http://localhost:8081/clientes/adicionar -H "Content-Type: application/json" -d "{\"nome_cliente\":\"Joao\",\"sobrenome_cliente\":\"Maziero\",\"cpf_cliente\":\"12345678908\",\"telefone\":\"11999999999\",\"email\":\"joao@gmail.com\",\"cep\":\"01001000\",\"logradouro\":\"Rua A\",\"numero\":100,\"bairro\":\"Centro\",\"cidade\":\"São Paulo\",\"estado\":\"São Paulo\"}"
 ```
 
 **GET /clientes**
-```curl http://localhost:8081/clientes
+```curl
+curl http://localhost:8081/clientes
 ```
 
-**GET /clientes/id_cliente**
-```curl http://localhost:8081/clientes/1
+**GET /clientes/:id_cliente**
+```curl
+curl http://localhost:8081/clientes/1
 ```
 
-**PUT /clientes/atualizar/id_cliente**
-```curl -X PUT http://localhost:8081/clientes/atualizar/3 -H "Content-Type: application/json" -d "{\"telefone\":\"11988887777\",\"email\":\"novoemail@gmail.com\"}"
+**PUT /clientes/atualizar/:id_cliente**
+```curl
+curl -X PUT http://localhost:8081/clientes/atualizar/3 -H "Content-Type: application/json" -d "{\"telefone\":\"11988887777\",\"email\":\"novoemail@gmail.com\"}"
 ```
 
-Criar pedido:
-curl -X POST http://localhost:8081/pedidos -H "Content-Type: application/json" -d "{\"data_pedido\":\"2025-12-04\",\"entrega_urgente\":true,\"distancia\":10.5,\"peso\":2.3,\"valor_km\":1.20,\"valor_kg\":2.50,\"id_cliente\":1}"
+**DELETE /clientes/deletar/:id_cliente**
+```curl
+curl -X DELETE http://localhost:8081/clientes/deletar/1
+```
 
-Criar entrega:
-curl -X POST http://localhost:8081/entregas -H "Content-Type: application/json" -d "{\"id_pedido\":1,\"distancia\":10.5,\"peso\":2.3,\"valor_km\":1.20,\"valor_kg\":2.50,\"entrega_urgente\":true,\"acrescimo\":0,\"desconto\":0,\"taxa\":false}"
+**POST /pedidos/adicionar**
+```curl
+curl -X POST http://localhost:8081/pedidos/adicionar -H "Content-Type: application/json" -d "{\"id_cliente\":1,\"distancia\":12,\"peso\":4,\"valor_km\":2.5,\"valor_kg\":1.2,\"entrega_urgente\":false,\"data_pedido\":\"2025-01-01\"}"
+```
+
+**GET /pedidos**
+```curl
+curl http://localhost:8081/pedidos
+```
+
+**GET /pedidos/:id_pedido**
+```curl
+curl http://localhost:8081/pedidos/1
+```
+
+**PUT /pedidos/atualizar/:id_pedido**
+```curl
+curl -X PUT http://localhost:8081/pedidos/atualizar/1 -H "Content-Type: application/json" -d "{\"distancia\":20,\"peso\":8}"
+```
+
+**DELETE /pedidos/deletar/:id_pedido**
+```curl
+curl -X DELETE http://localhost:8081/pedidos/deletar/1
+```
+
+**POST /entregas/adicionar**
+```curl
+curl -X POST http://localhost:8081/entregas/adicionar -H "Content-Type: application/json" -d "{\"status_entrega\":\"calculado\",\"id_pedido\":1}"
+```
+  
+**GET /entregas**
+```curl
+curl http://localhost:8081/entregas
+```
+
+**GET /entregas/:id_entrega**
+```curl
+curl http://localhost:8081/entregas/1
+```
+
+**PUT /entregas/atualizar/id_entrega**
+```curl
+curl -X PUT http://localhost:8081/entregas/atualizar/1 -H "Content-Type: application/json" -d "{\"status_entrega\":\"entregue\"}"
+```
+
+**DELETE /entregas/deletar/:id_entrega**
+```curl
+curl -X DELETE http://localhost:8081/entregas/deletar/1
+```
+
+### Utilização e exemplos com insomnia (windows)
+Para utilizar a API com insomnia é necessário ir no aplicativo, selecionar o metódo desejado e inserir a rota necessária no URL.
+
+
+#### Rotas utilizando o isomnia com exemplos
+**POST /clientes/adicionar**
+
+**Método:** POST\
+**URL:** http://localhost:8081/clientes/adicionar
+
+**Headers:**\
+Content-Type: application/json
+
+**Body:**
+
+``` json
+{
+  "nome_cliente": "Joao",
+  "sobrenome_cliente": "Maziero",
+  "cpf_cliente": "12345678908",
+  "telefone": "11999999999",
+  "email": "joao@gmail.com",
+  "cep": "01001000",
+  "logradouro": "Rua A",
+  "numero": 100,
+  "bairro": "Centro",
+  "cidade": "São Paulo",
+  "estado": "São Paulo"
+}
+```
+
+**GET /clientes**
+
+**Método:** GET\
+**URL:** http://localhost:8081/clientes
+
+**GET /clientes/:id_cliente**
+
+**Método:** GET\
+**URL:** http://localhost:8081/clientes/1
+
+**PUT /clientes/atualizar/:id_cliente**
+
+**Método:** PUT\
+**URL:** http://localhost:8081/clientes/atualizar/3
+
+**Headers:**\
+Content-Type: application/json
+
+**Body:**
+
+``` json
+{
+  "telefone": "11988887777",
+  "email": "novoemail@gmail.com"
+}
+```
+
+**DELETE /clientes/deletar/:id_cliente**
+
+**Método:** DELETE\
+**URL:** http://localhost:8081/clientes/deletar/1
+
+**POST /pedidos/adicionar**
+
+**Método:** POST\
+**URL:** http://localhost:8081/pedidos/adicionar
+
+**Headers:**\
+Content-Type: application/json
+
+**Body:**
+
+``` json
+{
+  "id_cliente": 1,
+  "distancia": 12,
+  "peso": 4,
+  "valor_km": 2.5,
+  "valor_kg": 1.2,
+  "entrega_urgente": false,
+  "data_pedido": "2025-01-01"
+}
+```
+
+**GET /pedidos**
+
+**Método:** GET\
+**URL:** http://localhost:8081/pedidos
+
+**GET /pedidos/:id_pedido**
+
+**Método:** GET\
+**URL:** http://localhost:8081/pedidos/1
+
+**PUT /pedidos/atualizar/:id_pedido**
+
+**Método:** PUT\
+**URL:** http://localhost:8081/pedidos/atualizar/1
+
+**Headers:**\
+Content-Type: application/json
+
+**Body:**
+
+``` json
+{
+  "distancia": 20,
+  "peso": 8
+}
+```
+
+**DELETE /pedidos/deletar/:id_pedido**
+
+**Método:** DELETE\
+**URL:** http://localhost:8081/pedidos/deletar/1
+
+**POST /entregas/adicionar**
+
+**Método:** POST\
+**URL:** http://localhost:8081/entregas/adicionar
+
+**Headers:**\
+Content-Type: application/json
+
+**Body:**
+
+``` json
+{
+  "status_entrega": "calculado",
+  "id_pedido": 1
+}
+```
+
+**GET /entregas**
+
+**Método:** GET\
+**URL:** http://localhost:8081/entregas
+
+**GET /entregas/:id_entrega**
+
+**Método:** GET\
+**URL:** http://localhost:8081/entregas/1
+
+**PUT /entregas/atualizar/:id_entrega**
+
+**Método:** PUT\
+**URL:** http://localhost:8081/entregas/atualizar/1
+
+**Headers:**\
+Content-Type: application/json
+
+**Body:**
+
+``` json
+{
+  "status_entrega": "entregue",
+  "id_pedido": 1
+}
+```
+
+**DELETE /entregas/deletar/:id_entrega**
+
+**Método:** DELETE\
+**URL:** http://localhost:8081/entregas/deletar/1
 
 ## Validações e tratamento de erros
-- Controllers validam campos obrigatórios e formatos básicos (CPF, email).
+- Controllers validam campos obrigatórios e formatos básicos (CPF, email, etc).
 - Respostas HTTP padronizadas: 201 (criado), 200 (sucesso), 400 (request inválido), 404 (não encontrado), 500 (erro servidor).
 - Transações são usadas em operações que afetam múltiplas tabelas (pedidos e entregas).
 
