@@ -137,6 +137,9 @@ const clienteController = {
  *
  * // Caso CPF já exista:
  * // { message: "Cpf já existente" }
+ * 
+ * // Caso Email já exista:
+ * // { message: "Email já existente" }
  *
  * // Caso falhem validações:
  * // { message: "Você inseriu valores de maneira inadequada" }
@@ -161,6 +164,11 @@ const clienteController = {
 
             if (cpfExistente.length !== 0) {
                 return res.status(409).json({ message: "Cpf já existente" })
+            }
+
+            const emailExistente = await clienteModel.buscarPorEmail(email);
+            if (emailExistente.length !== 0) {
+                return res.status(409).json({ message: "Email já existente" })
             }
 
             const resultado = await clienteModel.inserirCliente(nome_cliente, sobrenome_cliente, cpf_cliente, telefone, email, logradouro, numero, bairro, estado, cep, cidade);
@@ -219,6 +227,9 @@ const clienteController = {
  *
  * // Caso o CPF já exista:
  * // { message: "Cpf já existente" }
+ * 
+ * // Caso o Email já exista:
+ * // { message: "Email já existente" }
  */
 
     atualizarCliente: async (req, res) => {
@@ -269,6 +280,10 @@ const clienteController = {
                 return res.status(409).json({ message: "Cpf já existente" });
             }
 
+            const emailExistente = await clienteModel.buscarPorEmail(email);
+            if (emailExistente.length !== 0) {
+                return res.status(409).json({ message: "Email já existente" })
+            }
 
             const resultado = await clienteModel.updateCliente(novo_nome, novo_sobrenome, novo_cpf, novo_telefone, novo_email, novo_logradouro, novo_numero, novo_bairro, novo_estado, novo_cep, nova_cidade, id);
 

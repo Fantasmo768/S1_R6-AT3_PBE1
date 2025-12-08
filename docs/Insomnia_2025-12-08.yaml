@@ -312,7 +312,7 @@ collection:
         meta:
           id: req_cd35e6d6277a49babb718e5029b9f11c
           created: 1763982148178
-          modified: 1764610643687
+          modified: 1765194474240
           isPrivate: false
           description: ""
           sortKey: -1763982148178
@@ -323,9 +323,9 @@ collection:
             {
             	"nome_cliente": "João",
             	"sobrenome_cliente": "Maziero",
-            	"cpf_cliente": "12345678910",
+            	"cpf_cliente": "12345678917",
             	"telefone":"11999219991" ,
-            	"email": "maziero123@gmail.com",
+            	"email": "maziero124@gmail.com",
             	"logradouro": "Rua asdia",
             	"numero": "123",
             	"bairro": "Vila W",
