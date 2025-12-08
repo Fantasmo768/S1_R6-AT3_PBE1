@@ -109,53 +109,53 @@ const pedidoController = {
         }
     },
 
-            /**
- * @async
- * @function adicionarPedido
- * @description Adiciona um novo pedido ao banco de dados após validar todos os dados enviados na requisição
- * e calcular o valor final da entrega (considerando distância, peso, urgência, descontos e taxa adicional).
- * 
- * @param {Object} req Objeto de requisição do Express contendo os dados do pedido enviados no corpo da requisição.
- * @param {Object} res Objeto de resposta do Express utilizado para retornar o resultado da operação.
- *
- * @returns {JSON} Retorna uma mensagem de sucesso e os dados do pedido cadastrado ou mensagens de erro de validação.
- * 
- * @example
- * // Requisição:
- * POST /pedidos
- * {
- *   "data_pedido": "2025-11-28",
- *   "entrega_urgente": true,
- *   "distancia": 12,
- *   "peso": 30,
- *   "valor_km": 2.50,
- *   "valor_kg": 1.80,
- *   "id_cliente": 7,
- *   "status_entrega": "calculado"
- * }
- * 
- * // Resposta esperada:
- * {
- *   "message": "Pedido adicionado com sucesso",
- *   "pedidoAdicionado": {
- *       "id_pedido": 21,
- *       "valor_final": 142.8,
- *       ...
- *   }
- * }
- *
- * @example
- * // Caso o cliente não exista:
- * POST /pedidos
- * {
- *   "id_cliente": 999
- * }
- *
- * // Resposta esperada:
- * {
- *   "message": "O cliente não existe"
- * }
- */
+    /**
+* @async
+* @function adicionarPedido
+* @description Adiciona um novo pedido ao banco de dados após validar todos os dados enviados na requisição
+* e calcular o valor final da entrega (considerando distância, peso, urgência, descontos e taxa adicional).
+* 
+* @param {Object} req Objeto de requisição do Express contendo os dados do pedido enviados no corpo da requisição.
+* @param {Object} res Objeto de resposta do Express utilizado para retornar o resultado da operação.
+*
+* @returns {JSON} Retorna uma mensagem de sucesso e os dados do pedido cadastrado ou mensagens de erro de validação.
+* 
+* @example
+* // Requisição:
+* POST /pedidos
+* {
+*   "data_pedido": "2025-11-28",
+*   "entrega_urgente": true,
+*   "distancia": 12,
+*   "peso": 30,
+*   "valor_km": 2.50,
+*   "valor_kg": 1.80,
+*   "id_cliente": 7,
+*   "status_entrega": "calculado"
+* }
+* 
+* // Resposta esperada:
+* {
+*   "message": "Pedido adicionado com sucesso",
+*   "pedidoAdicionado": {
+*       "id_pedido": 21,
+*       "valor_final": 142.8,
+*       ...
+*   }
+* }
+*
+* @example
+* // Caso o cliente não exista:
+* POST /pedidos
+* {
+*   "id_cliente": 999
+* }
+*
+* // Resposta esperada:
+* {
+*   "message": "O cliente não existe"
+* }
+*/
 
     adicionarPedido: async (req, res) => {
 
@@ -223,7 +223,10 @@ const pedidoController = {
                 valor_final = valor_final + 15;
             }
 
+
+
             const pedidoAdicionado = await pedidoModel.adicionarPedido(data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente, valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega);
+            console.log(pedidoAdicionado);
 
             return res.status(201).json({ message: "Pedido adicionado com sucesso", pedidoAdicionado });
         } catch (error) {
@@ -381,22 +384,25 @@ const pedidoController = {
    /**
  * @async
  * @function deletarPedido
- * @description Deleta um pedido do banco de dados com base no identificador informado.
- * Verifica se o ID enviado é válido e se o pedido realmente existe antes de realizar a exclusão.
+ * @description Controlador responsável por excluir um pedido e sua entrega relacionada
+ * a partir do identificador fornecido na URL. Antes da exclusão, a função valida o ID
+ * e verifica se o pedido realmente existe no banco de dados.
  * 
  * @param {Object} req Objeto de requisição do Express.
- * @param {Object} req.params.id Identificador do pedido que deve ser removido.
+ * @param {string} req.params.id Identificador do pedido que deve ser removido.
  * @param {Object} res Objeto de resposta do Express.
  * 
- * @returns {JSON} Retorna mensagem de sucesso caso o pedido seja deletado ou mensagens de erro/validação.
+ * @returns {JSON} Retorna uma resposta JSON contendo mensagens de sucesso,
+ * erro de validação ou erro de inexistência, além dos resultados da operação
+ * de exclusão quando bem-sucedida.
  * 
  * @example
- * // Requisição:
+ * // Requisição válida:
  * DELETE /pedidos/10
  * 
  * // Resposta esperada:
  * {
- *   "message": "Pedido deletado com sucesso!",
+ *   "message": "Pedido e entrega deletados com sucesso!",
  *   "resultado": { ... }
  * }
  * 
@@ -418,7 +424,6 @@ const pedidoController = {
  *   "message": "Pedido não encontrado"
  * }
  */
-
     deletarPedido: async (req, res) => {
 
         try {
@@ -432,23 +437,17 @@ const pedidoController = {
             const pedidoSelecionado = await pedidoModel.buscarPedidoPorId(id);
 
             if (pedidoSelecionado.length === 0) {
-                return res.status(404).json({Message:"Pedido não encontrado"});
-            }
-
-            const entregaRelacionada = await entregaModel.buscarEntregaPorPedido(id);
-
-            if (entregaRelacionada.length !== 0) {
-                return res.status(400).json({message: "Existe uma entrega relacionada a este pedido. Delete a entrega primeiro."});
+                return res.status(404).json({ Message: "Pedido não encontrado" });
             }
 
             const resultado = await pedidoModel.deletePedido(id);
 
-            return res.status(200).json({ message: "Pedido deletado com sucesso!", resultado });
+            return res.status(200).json({ message: "Pedido e entrega deletados com sucesso!", resultado });
 
         } catch (error) {
             console.error(error);
             return res.status(500).json({
-                message: 'Erro ao deletar o pedido'
+                message: 'Erro ao deletar o pedido e a entrega'
             });
         }
 

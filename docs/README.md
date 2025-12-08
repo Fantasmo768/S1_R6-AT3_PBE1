@@ -211,8 +211,8 @@ curl -X DELETE http://localhost:8081/entregas/deletar/1
 ### Utilização e exemplos com insomnia (windows)
 Para utilizar a API com insomnia é necessário ir no aplicativo, selecionar o metódo desejado e inserir a rota necessária no URL.
 
-
 #### Rotas utilizando o isomnia com exemplos
+
 **POST /clientes/adicionar**
 
 **Método:** POST\

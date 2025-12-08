@@ -264,32 +264,44 @@ const pedidoModel = {
         }
     },
 
-    /**
+ /**
  * @async
  * @function deletePedido
- * Remove um pedido do banco de dados com base no seu identificador.
+ * Remove um pedido e sua entrega associada do banco de dados com base no identificador do pedido.
  *
- * @param {Number} id_pedido Identificador do pedido que deve ser removido.
+ * A função executa duas operações dentro de uma transação:
+ * 1. Remove o registro da tabela `entregas` vinculado ao pedido.
+ * 2. Remove o registro da tabela `pedidos`.
  *
- * @returns {Promise<Object>} Retorna o resultado da operação de remoção,
- * incluindo quantidade de linhas afetadas.
+ * Caso alguma das operações falhe, toda a transação é revertida (rollback),
+ * garantindo a integridade do banco de dados.
+ *
+ * @param {Number} id_pedido Identificador único do pedido que deve ser removido.
+ *
+ * @returns {Promise<Object>} Retorna um objeto contendo os resultados das remoções
+ * nas tabelas `entregas` e `pedidos`.
  *
  * @example
- * const resultado = await pedidoModel.deletePedido(5);
+ * const resultado = await pedidoModel.deletePedido(10);
  * console.log(resultado);
  * // Resultado esperado:
- * // { affectedRows: 1, ... }
+ * // {
+ * //   rowsEntrega: { affectedRows: 1, ... },
+ * //   rowsPedido:  { affectedRows: 1, ... }
+ * // }
  */
 
     deletePedido: async (id_pedido) => {
         const connection = await pool.getConnection();
         try {
             await connection.beginTransaction();
-            const sql = 'DELETE FROM pedidos WHERE id_pedido = ?;'
-            const [rows] = await pool.query(sql, id_pedido);
+            const sqlPedido = 'DELETE FROM pedidos WHERE id_pedido = ?;'
+            const [rowsPedido] = await pool.query(sqlEntrega, id_pedido);
 
+            const sqlEntrega = 'DELETE FROM entregas WHERE id_pedido_fk = ?;';
+            const [rowsEntrega] = await pool.query(sqlEntrega, id_pedido);
             connection.commit();
-            return rows;
+            return {rowsPedido, rowsEntrega};
         } catch (error) {
             connection.rollback();
             throw error;

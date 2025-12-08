@@ -174,9 +174,15 @@ const entregaController = {
             if (!status_entrega || !id_pedido || !Number.isInteger(id_pedido_num) || typeof status_entrega_string !== "string") {
                 return res.status(400).json({ message: "Você inseriu algum valor de maneira inadequada" });
             }
-
+            
             if (status_entrega !== "calculado" && status_entrega !== "entregue" && status_entrega !== "em transito" && status_entrega !== "cancelado") {
                 return res.status(400).json({ message: "Insira algum status de entrega que esteja de acordo com a lista: calculado, entrege, em transito ou cancelado" });
+            }
+
+            const pedidoRelacionado = await entregaModel.buscarEntregaPorPedido(id_pedido);
+            
+            if (pedidoRelacionado.length !== 0) {
+                return res.status(400).json({message: "Já existe uma entrega relacionada a este pedido!"});
             }
 
             const pedidoSelecionado = await pedidoModel.buscarInfoPedido(id_pedido);
@@ -330,6 +336,12 @@ const entregaController = {
                 return res.status(400).json({ message: "Insira algum status de entrega que esteja de acordo com a lista: calculado, entrege, em transito ou cancelado" });
             }
 
+            const pedidoRelacionado = await entregaModel.buscarEntregaPorPedido(id_pedido);
+            
+            if (pedidoRelacionado.length !== 0) {
+                return res.status(400).json({message: "Já existe uma entrega relacionada a este pedido!"});
+            }
+
             let desconto = 0;
 
             let acrescimo = 0;
@@ -365,6 +377,8 @@ const entregaController = {
             }
             
             const resultado = await entregaModel.updateEntrega(valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, novo_status_entrega, novo_id_pedido, id_entrega);
+
+
             console.log(resultado, valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, novo_status_entrega, novo_id_pedido, id_entrega)
 
             return res.status(201).json({ message: "Entrega atualizada com sucesso", resultado });

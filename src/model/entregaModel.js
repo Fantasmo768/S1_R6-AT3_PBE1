@@ -256,7 +256,7 @@ const entregaModel = {
         try {
             await connection.beginTransaction();
             const sql = "SELECT * FROM entregas WHERE id_pedido_fk = ?";
-            const [rows] = await pool.query(sql, [id_pedido]);
+            const [rows] = await pool.query(sql, id_pedido);
 
             await connection.commit();
             return rows;
