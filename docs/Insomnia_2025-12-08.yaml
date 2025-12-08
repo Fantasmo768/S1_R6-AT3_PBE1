@@ -276,12 +276,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8081/pedidos/deletar/34
+      - url: http://localhost:8081/pedidos/deletar/5
         name: deletePedido
         meta:
           id: req_b9ab858917f546d4998d76d7ad49a093
           created: 1764586890974
-          modified: 1764610991693
+          modified: 1765191630595
           isPrivate: false
           description: ""
           sortKey: -1763983323749

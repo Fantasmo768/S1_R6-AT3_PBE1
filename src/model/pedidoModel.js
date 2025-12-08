@@ -2,33 +2,33 @@ const pool = require('../config/db');
 
 const pedidoModel = {
 
-        /**
-     * @async
-     * @function buscarTodosPedidos
-     * Seleciona todos os registros da tabela "pedidos"
-     * @returns {Promise<Array<Object>>} Retorna um array contendo todos os pedidos cadastrados no banco de dados
-     * 
-     * @example
-     * const pedidos = await pedidoModel.buscarTodosPedidos();
-     * console.log(pedidos);
-     * // Resultado esperado:
-     * // [
-     * //   {
-     * //     id_pedido: 1,
-     * //     id_cliente_fk: 3,
-     * //     data_pedido: "2025-02-15",
-     * //     valor_total: 89.90,
-     * //     status_pedido: "Finalizado"
-     * //   },
-     * //   {
-     * //     id_pedido: 2,
-     * //     id_cliente_fk: 1,
-     * //     data_pedido: "2025-02-16",
-     * //     valor_total: 120.50,
-     * //     status_pedido: "Em andamento"
-     * //   }
-     * // ]
-     */
+    /**
+ * @async
+ * @function buscarTodosPedidos
+ * Seleciona todos os registros da tabela "pedidos"
+ * @returns {Promise<Array<Object>>} Retorna um array contendo todos os pedidos cadastrados no banco de dados
+ * 
+ * @example
+ * const pedidos = await pedidoModel.buscarTodosPedidos();
+ * console.log(pedidos);
+ * // Resultado esperado:
+ * // [
+ * //   {
+ * //     id_pedido: 1,
+ * //     id_cliente_fk: 3,
+ * //     data_pedido: "2025-02-15",
+ * //     valor_total: 89.90,
+ * //     status_pedido: "Finalizado"
+ * //   },
+ * //   {
+ * //     id_pedido: 2,
+ * //     id_cliente_fk: 1,
+ * //     data_pedido: "2025-02-16",
+ * //     valor_total: 120.50,
+ * //     status_pedido: "Em andamento"
+ * //   }
+ * // ]
+ */
 
     buscarTodosPedidos: async () => {
         const connection = await pool.getConnection();
@@ -120,55 +120,55 @@ const pedidoModel = {
 
     },
 
-     /**
- * @async
- * @function adicionarPedido
- * Cria um novo pedido no banco de dados e, em seguida, insere automaticamente a entrega
- * vinculada ao pedido recém-criado.
- *
- * @param {String} data_pedido Data em que o pedido foi realizado.
- * @param {Number} entrega_urgente Indica se o pedido é urgente (0 = não, 1 = sim).
- * @param {Number} distancia Distância total da entrega em quilômetros.
- * @param {Number} peso Peso total da carga em quilogramas.
- * @param {Number} valor_km Valor cobrado por quilômetro.
- * @param {Number} valor_kg Valor cobrado por quilograma.
- * @param {Number} id_cliente Identificador do cliente que realizou o pedido.
- * @param {Number} valor_distancia Valor calculado com base na distância.
- * @param {Number} valor_peso Valor calculado com base no peso.
- * @param {Number} acrescimo Valor adicional aplicado à entrega (ex.: urgência).
- * @param {Number} desconto Valor descontado da entrega.
- * @param {Number} taxa Taxa fixa aplicada ao pedido.
- * @param {Number} valor_final Valor final total da entrega.
- * @param {String} status_entrega Status atual da entrega (ex.: "pendente", "concluída").
- *
- * @returns {Promise<Object>} Retorna um objeto contendo o resultado da inserção do pedido
- * e da entrega vinculada.
- *
- * @example
- * const resultado = await pedidoModel.adicionarPedido(
- *   "2025-01-10",
- *   1,
- *   15.2,
- *   12.5,
- *   1.50,
- *   2.00,
- *   4,         // id do cliente
- *   22.8,
- *   25.0,
- *   10.0,
- *   5.0,
- *   8.0,
- *   60.8,
- *   "pendente"
- * );
- *
- * console.log(resultado);
- * // Resultado esperado:
- * // {
- * //   rowsPedido: { insertId: 10, ... },
- * //   rowsEntrega: { insertId: 10, ... }
- * // }
- */
+    /**
+* @async
+* @function adicionarPedido
+* Cria um novo pedido no banco de dados e, em seguida, insere automaticamente a entrega
+* vinculada ao pedido recém-criado.
+*
+* @param {String} data_pedido Data em que o pedido foi realizado.
+* @param {Number} entrega_urgente Indica se o pedido é urgente (0 = não, 1 = sim).
+* @param {Number} distancia Distância total da entrega em quilômetros.
+* @param {Number} peso Peso total da carga em quilogramas.
+* @param {Number} valor_km Valor cobrado por quilômetro.
+* @param {Number} valor_kg Valor cobrado por quilograma.
+* @param {Number} id_cliente Identificador do cliente que realizou o pedido.
+* @param {Number} valor_distancia Valor calculado com base na distância.
+* @param {Number} valor_peso Valor calculado com base no peso.
+* @param {Number} acrescimo Valor adicional aplicado à entrega (ex.: urgência).
+* @param {Number} desconto Valor descontado da entrega.
+* @param {Number} taxa Taxa fixa aplicada ao pedido.
+* @param {Number} valor_final Valor final total da entrega.
+* @param {String} status_entrega Status atual da entrega (ex.: "pendente", "concluída").
+*
+* @returns {Promise<Object>} Retorna um objeto contendo o resultado da inserção do pedido
+* e da entrega vinculada.
+*
+* @example
+* const resultado = await pedidoModel.adicionarPedido(
+*   "2025-01-10",
+*   1,
+*   15.2,
+*   12.5,
+*   1.50,
+*   2.00,
+*   4,         // id do cliente
+*   22.8,
+*   25.0,
+*   10.0,
+*   5.0,
+*   8.0,
+*   60.8,
+*   "pendente"
+* );
+*
+* console.log(resultado);
+* // Resultado esperado:
+* // {
+* //   rowsPedido: { insertId: 10, ... },
+* //   rowsEntrega: { insertId: 10, ... }
+* // }
+*/
 
     adicionarPedido: async (data_pedido, entrega_urgente, distancia, peso, valor_km, valor_kg, id_cliente, valor_distancia, valor_peso, acrescimo, desconto, taxa, valor_final, status_entrega) => {
         const connection = await pool.getConnection();
@@ -264,44 +264,47 @@ const pedidoModel = {
         }
     },
 
- /**
- * @async
- * @function deletePedido
- * Remove um pedido e sua entrega associada do banco de dados com base no identificador do pedido.
- *
- * A função executa duas operações dentro de uma transação:
- * 1. Remove o registro da tabela `entregas` vinculado ao pedido.
- * 2. Remove o registro da tabela `pedidos`.
- *
- * Caso alguma das operações falhe, toda a transação é revertida (rollback),
- * garantindo a integridade do banco de dados.
- *
- * @param {Number} id_pedido Identificador único do pedido que deve ser removido.
- *
- * @returns {Promise<Object>} Retorna um objeto contendo os resultados das remoções
- * nas tabelas `entregas` e `pedidos`.
- *
- * @example
- * const resultado = await pedidoModel.deletePedido(10);
- * console.log(resultado);
- * // Resultado esperado:
- * // {
- * //   rowsEntrega: { affectedRows: 1, ... },
- * //   rowsPedido:  { affectedRows: 1, ... }
- * // }
- */
+    /**
+    * @async
+    * @function deletePedido
+    * Remove um pedido e sua entrega associada do banco de dados com base no identificador do pedido.
+    *
+    * A função executa duas operações dentro de uma transação:
+    * 1. Remove o registro da tabela `entregas` vinculado ao pedido.
+    * 2. Remove o registro da tabela `pedidos`.
+    *
+    * Caso alguma das operações falhe, toda a transação é revertida (rollback),
+    * garantindo a integridade do banco de dados.
+    *
+    * @param {Number} id_pedido Identificador único do pedido que deve ser removido.
+    *
+    * @returns {Promise<Object>} Retorna um objeto contendo os resultados das remoções
+    * nas tabelas `entregas` e `pedidos`.
+    *
+    * @example
+    * const resultado = await pedidoModel.deletePedido(10);
+    * console.log(resultado);
+    * // Resultado esperado:
+    * // {
+    * //   rowsEntrega: { affectedRows: 1, ... },
+    * //   rowsPedido:  { affectedRows: 1, ... }
+    * // }
+    */
 
     deletePedido: async (id_pedido) => {
         const connection = await pool.getConnection();
         try {
             await connection.beginTransaction();
-            const sqlPedido = 'DELETE FROM pedidos WHERE id_pedido = ?;'
-            const [rowsPedido] = await pool.query(sqlEntrega, id_pedido);
 
             const sqlEntrega = 'DELETE FROM entregas WHERE id_pedido_fk = ?;';
             const [rowsEntrega] = await pool.query(sqlEntrega, id_pedido);
+
+
+            const sqlPedido = 'DELETE FROM pedidos WHERE id_pedido = ?;';
+            const [rowsPedido] = await pool.query(sqlPedido, id_pedido);
+
             connection.commit();
-            return {rowsPedido, rowsEntrega};
+            return { rowsPedido, rowsEntrega };
         } catch (error) {
             connection.rollback();
             throw error;
@@ -348,7 +351,7 @@ const pedidoModel = {
             const sql = "SELECT * FROM pedidos WHERE id_cliente_fk = ?";
             const [rows] = await pool.query(sql, [id_cliente]);
 
-             connection.commit();
+            connection.commit();
             return rows;
         } catch (error) {
             connection.rollback();
